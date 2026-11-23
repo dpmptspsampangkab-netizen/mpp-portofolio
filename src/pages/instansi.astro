@@ -1,0 +1,15 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+const list = (await getCollection('instansi')).sort((a, b) => a.data.urutan - b.data.urutan);
+const layanan = await getCollection('layanan');
+const rendered = await Promise.all(list.map(async (i) => ({ i, C: (await render(i)).Content, n: layanan.filter((l) => l.data.instansi === i.data.nama).length })));
+---
+<Base title="Instansi" description="Instansi yang melayani di Mal Pelayanan Publik.">
+  <div class="wrap">
+    <div class="page-head"><h1>Instansi</h1><p>Instansi yang melayani di MPP.</p></div>
+    <div class="grid">
+      {rendered.map(({ i, C, n }) => <div class="card"><span class="tag">{i.data.loket}</span><h3>{i.data.nama}</h3><C />{i.data.telepon && <p>Telp. {i.data.telepon}</p>}<p>{n} layanan</p></div>)}
+    </div>
+  </div>
+</Base>

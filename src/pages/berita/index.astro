@@ -1,0 +1,13 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+const list = (await getCollection('berita')).sort((a, b) => +b.data.tanggal - +a.data.tanggal);
+---
+<Base title="Berita" description="Berita dan pengumuman Mal Pelayanan Publik.">
+  <div class="wrap">
+    <div class="page-head"><h1>Berita &amp; pengumuman</h1></div>
+    <div class="grid">
+      {list.map((b) => <a class="card" href={`/berita/${b.id}`}><span class="meta">{b.data.tanggal.toLocaleDateString('id-ID', { dateStyle: 'long' })}</span><h3>{b.data.judul}</h3><p>{b.data.ringkas}</p></a>)}
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import site from '../data/site.json';
+---
+<Base title="Tentang" description={`Profil ${site.nama} ${site.daerah}`}>
+  <div class="wrap">
+    <div class="page-head"><h1>Tentang {site.singkat}</h1><p>Profil, visi, dan maklumat pelayanan.</p></div>
+    <div class="cols">
+      <div class="card"><h3>Visi</h3><p>{site.tentang.visi}</p></div>
+      <div class="card"><h3>Maklumat pelayanan</h3><p>{site.tentang.maklumat}</p></div>
+    </div>
+  </div>
+</Base>

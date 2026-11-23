@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import site from '../data/site.json';
+---
+<Base title="Kontak & lokasi" description="Alamat, jam layanan, dan kontak Mal Pelayanan Publik.">
+  <div class="wrap">
+    <div class="page-head"><h1>Kontak &amp; lokasi</h1></div>
+    <div class="cols">
+      <div class="card"><h3>Alamat</h3><p>{site.alamat}</p>
+        <p style="margin-top:12px"><a class="btn alt" href={site.petaLink} target="_blank" rel="noopener">Petunjuk arah</a></p></div>
+      <div class="card"><h3>Jam layanan</h3>
+        <table>{site.jam.map((j) => <tr><td>{j.hari}</td><td>{j.jam}</td></tr>)}</table></div>
+      <div class="card"><h3>Hubungi kami</h3>
+        <p>Telepon: <a href={`tel:${site.telepon.replace(/[^+\d]/g, '')}`}>{site.telepon}</a></p>
+        <p>WhatsApp: <a href={`https://wa.me/${site.whatsapp}`} target="_blank" rel="noopener">Kirim pesan</a></p>
+        <p>Email: <a href={`mailto:${site.email}`}>{site.email}</a></p></div>
+    </div>
+  </div>
+</Base>

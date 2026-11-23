@@ -1,0 +1,27 @@
+{
+  "nama": "Mal Pelayanan Publik",
+  "singkat": "MPP",
+  "daerah": "Kabupaten Sampang",
+  "tagline": "Satu atap, banyak layanan. Cepat, jelas, dan ramah.",
+  "logo": "/logo-placeholder.svg",
+  "alamat": "Isi alamat lengkap MPP di sini",
+  "jam": [
+    { "hari": "Senin – Kamis", "jam": "08.00 – 15.00" },
+    { "hari": "Jumat", "jam": "08.00 – 14.30" },
+    { "hari": "Sabtu – Minggu & libur nasional", "jam": "Tutup" }
+  ],
+  "telepon": "0000-0000-0000",
+  "whatsapp": "6200000000000",
+  "email": "mpp@contoh.go.id",
+  "petaLink": "https://maps.google.com/?q=Mal+Pelayanan+Publik+Sampang",
+  "capaian": [
+    { "label": "Instansi di MPP", "nilai": 0, "satuan": "" },
+    { "label": "Jenis layanan", "nilai": 0, "satuan": "" },
+    { "label": "Pengunjung per tahun", "nilai": 0, "satuan": "" },
+    { "label": "Indeks kepuasan", "nilai": 0, "satuan": "/ 100" }
+  ],
+  "tentang": {
+    "visi": "Isi visi MPP di sini.",
+    "maklumat": "Isi maklumat pelayanan di sini."
+  }
+}

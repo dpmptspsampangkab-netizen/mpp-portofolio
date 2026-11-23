@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import site from '../data/site.json';
+---
+<Base title="Capaian" description="Capaian dan indikator kinerja Mal Pelayanan Publik.">
+  <div class="wrap">
+    <div class="page-head"><h1>Capaian</h1><p>Indikator kinerja yang diperbarui secara berkala. Ubah angkanya di <code>src/data/site.json</code>.</p></div>
+    <div class="grid">
+      {site.capaian.map((c) => <div class="card stat"><b>{c.nilai.toLocaleString('id-ID')}{c.satuan ? ' ' + c.satuan : ''}</b><span>{c.label}</span></div>)}
+    </div>
+  </div>
+</Base>

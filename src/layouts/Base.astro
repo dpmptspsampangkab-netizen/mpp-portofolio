@@ -1,0 +1,49 @@
+---
+import '../styles/global.css';
+import site from '../data/site.json';
+interface Props { title?: string; description?: string }
+const { title, description = site.tagline } = Astro.props;
+const full = title ? `${title} | ${site.singkat} ${site.daerah}` : `${site.nama} ${site.daerah}`;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const nav = [
+  ['/', 'Beranda'], ['/tentang', 'Tentang'], ['/layanan', 'Layanan'], ['/instansi', 'Instansi'],
+  ['/capaian', 'Capaian'], ['/galeri', 'Galeri'], ['/berita', 'Berita'], ['/kontak', 'Kontak'],
+];
+const active = (h: string) => (h === '/' ? path === '/' : path === h || path.startsWith(h + '/'));
+---
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{full}</title>
+  <meta name="description" content={description} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+  <meta property="og:title" content={full} />
+  <meta property="og:description" content={description} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+</head>
+<body>
+  <a class="skip" href="#isi">Lewati ke konten</a>
+  <header class="site">
+    <div class="wrap bar">
+      <a class="brand" href="/"><img src={site.logo} alt="" /><span>{site.nama}<small>{site.daerah}</small></span></a>
+      <button class="menu-btn" id="mb" aria-expanded="false" aria-controls="nv">Menu</button>
+      <nav id="nv" aria-label="Utama">
+        <ul>{nav.map(([h, t]) => <li><a href={h} aria-current={active(h) ? 'page' : undefined}>{t}</a></li>)}</ul>
+      </nav>
+    </div>
+  </header>
+  <main id="isi"><slot /></main>
+  <footer class="site"><div class="wrap">
+    <strong>{site.nama} {site.daerah}</strong><br />{site.alamat}<br />
+    © {new Date().getFullYear()} {site.nama} {site.daerah}
+  </div></footer>
+  <script>
+    const b = document.getElementById('mb'), n = document.getElementById('nv');
+    b?.addEventListener('click', () => { const o = n!.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); });
+  </script>
+</body>
+</html>
