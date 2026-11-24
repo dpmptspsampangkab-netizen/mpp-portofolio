@@ -1,20 +1,41 @@
 ---
 import Base from '../layouts/Base.astro';
-import galeri from '../data/galeri.json';
 ---
 <Base title="Galeri" description="Foto kegiatan dan fasilitas Mal Pelayanan Publik.">
   <div class="wrap">
     <div class="page-head"><h1>Galeri</h1><p>Foto kegiatan dan fasilitas.</p></div>
-    <div class="gal">
-      {galeri.map((g) => <button type="button" data-src={g.src} data-cap={g.keterangan}><img src={g.src} alt={g.keterangan} loading="lazy" /></button>)}
-    </div>
+    <div class="gal" id="gal"><p class="meta">Memuat…</p></div>
     <dialog id="dlg"><img id="dimg" alt="" /><p id="dcap"></p><form method="dialog" style="padding:0 16px 16px"><button class="btn">Tutup</button></form></dialog>
   </div>
   <script>
-    const dlg = document.getElementById('dlg') as HTMLDialogElement, im = document.getElementById('dimg') as HTMLImageElement, cap = document.getElementById('dcap')!;
-    document.querySelectorAll<HTMLElement>('.gal button').forEach((b) => b.addEventListener('click', () => {
-      im.src = b.dataset.src!; im.alt = b.dataset.cap!; cap.textContent = b.dataset.cap!; dlg.showModal();
-    }));
+    import { muatData, esc, pesanGagal } from '../lib/data';
+
+    const dlg = document.getElementById('dlg') as HTMLDialogElement;
+    const im = document.getElementById('dimg') as HTMLImageElement;
+    const cap = document.getElementById('dcap')!;
+    const gal = document.getElementById('gal')!;
+
+    gal.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest('button');
+      if (!b) return;
+      im.src = b.dataset.src!;
+      im.alt = b.dataset.cap!;
+      cap.textContent = b.dataset.cap!;
+      dlg.showModal();
+    });
     dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+
+    muatData(
+      (d) => {
+        const foto = d.galeri.filter((g) => /^(https?:\/\/|\/)/i.test(g.url));
+        gal.innerHTML = foto.length
+          ? foto.map((g) => {
+              const ket = g.keterangan || g.judul;
+              return `<button type="button" data-src="${esc(g.url)}" data-cap="${esc(ket)}"><img src="${esc(g.url)}" alt="${esc(ket)}" loading="lazy" /></button>`;
+            }).join('')
+          : '<p class="meta">Belum ada foto.</p>';
+      },
+      () => { gal.innerHTML = pesanGagal; },
+    );
   </script>
 </Base>

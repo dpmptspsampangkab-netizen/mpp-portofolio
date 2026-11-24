@@ -37,13 +37,29 @@ const active = (h: string) => (h === '/' ? path === '/' : path === h || path.sta
     </div>
   </header>
   <main id="isi"><slot /></main>
-  <footer class="site"><div class="wrap">
+  <footer class="site"><div class="wrap" id="ft">
     <strong>{site.nama} {site.daerah}</strong><br />{site.alamat}<br />
     © {new Date().getFullYear()} {site.nama} {site.daerah}
   </div></footer>
   <script>
+    import { muatData, esc } from '../lib/data';
+
     const b = document.getElementById('mb'), n = document.getElementById('nv');
     b?.addEventListener('click', () => { const o = n!.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); });
+
+    // Nama situs, daerah, dan alamat di header/footer mengikuti Pengaturan di admin.
+    muatData((d) => {
+      const sp = document.querySelector('.brand span');
+      if (sp) {
+        if (sp.firstChild) sp.firstChild.nodeValue = d.situs.nama;
+        const sm = sp.querySelector('small');
+        if (sm) sm.textContent = d.situs.daerah;
+      }
+      const ft = document.getElementById('ft');
+      if (ft) {
+        ft.innerHTML = `<strong>${esc(d.situs.nama)} ${esc(d.situs.daerah)}</strong><br />${esc(d.situs.alamat)}<br />© ${new Date().getFullYear()} ${esc(d.situs.nama)} ${esc(d.situs.daerah)}`;
+      }
+    });
   </script>
 </body>
 </html>

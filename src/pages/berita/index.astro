@@ -1,13 +1,22 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-const list = (await getCollection('berita')).sort((a, b) => +b.data.tanggal - +a.data.tanggal);
 ---
 <Base title="Berita" description="Berita dan pengumuman Mal Pelayanan Publik.">
   <div class="wrap">
     <div class="page-head"><h1>Berita &amp; pengumuman</h1></div>
-    <div class="grid">
-      {list.map((b) => <a class="card" href={`/berita/${b.id}`}><span class="meta">{b.data.tanggal.toLocaleDateString('id-ID', { dateStyle: 'long' })}</span><h3>{b.data.judul}</h3><p>{b.data.ringkas}</p></a>)}
-    </div>
+    <div class="grid" id="list"><p class="meta">Memuat…</p></div>
   </div>
+  <script>
+    import { muatData, esc, tanggalIndo, pesanGagal } from '../../lib/data';
+
+    const list = document.getElementById('list')!;
+    muatData(
+      (d) => {
+        list.innerHTML = d.berita.length
+          ? d.berita.map((b) => `<a class="card" href="/berita/detail?id=${encodeURIComponent(b.id)}"><span class="meta">${esc(tanggalIndo(b.tanggal))}</span><h3>${esc(b.judul)}</h3><p>${esc(b.ringkas)}</p></a>`).join('')
+          : '<p class="meta">Belum ada berita.</p>';
+      },
+      () => { list.innerHTML = pesanGagal; },
+    );
+  </script>
 </Base>

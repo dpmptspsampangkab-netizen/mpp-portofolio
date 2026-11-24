@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 
-// Ganti dengan alamat situs setelah tayang (mis. https://mpp-sampang.pages.dev atau domain resmi .go.id)
+// Alamat situs. Ganti dengan domain resmi (.go.id) bila sudah ada.
 export default defineConfig({
-  site: 'https://mpp-portofolio.pages.dev',
+  site: 'https://mpp-portofolio.dpmptsp-sampangkab.workers.dev',
 });

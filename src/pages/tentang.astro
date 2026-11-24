@@ -4,10 +4,21 @@ import site from '../data/site.json';
 ---
 <Base title="Tentang" description={`Profil ${site.nama} ${site.daerah}`}>
   <div class="wrap">
-    <div class="page-head"><h1>Tentang {site.singkat}</h1><p>Profil, visi, dan maklumat pelayanan.</p></div>
-    <div class="cols">
-      <div class="card"><h3>Visi</h3><p>{site.tentang.visi}</p></div>
-      <div class="card"><h3>Maklumat pelayanan</h3><p>{site.tentang.maklumat}</p></div>
-    </div>
+    <div class="page-head"><h1 id="judul">Tentang {site.singkat}</h1><p>Profil, visi, dan maklumat pelayanan.</p></div>
+    <div class="cols" id="isi-tentang"><p class="meta">Memuat…</p></div>
   </div>
+  <script>
+    import { muatData, esc, paragraf, pesanGagal } from '../lib/data';
+
+    const isi = document.getElementById('isi-tentang')!;
+    muatData(
+      (d) => {
+        document.getElementById('judul')!.textContent = `Tentang ${d.situs.singkat}`;
+        isi.innerHTML = `
+          <div class="card"><h3>Visi</h3>${paragraf(d.situs.tentang.visi)}</div>
+          <div class="card"><h3>Maklumat pelayanan</h3>${paragraf(d.situs.tentang.maklumat)}</div>`;
+      },
+      () => { isi.innerHTML = pesanGagal; },
+    );
+  </script>
 </Base>

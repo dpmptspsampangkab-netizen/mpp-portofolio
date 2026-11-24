@@ -1,0 +1,49 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base title="Layanan" description="Daftar layanan di Mal Pelayanan Publik beserta syarat dan alurnya.">
+  <div class="wrap">
+    <div class="page-head"><h1>Layanan</h1><p>Cari layanan, lihat syarat dan alurnya.</p></div>
+    <div class="tools">
+      <input type="search" id="q" placeholder="Cari layanan, mis. KK, NIB…" aria-label="Cari layanan" />
+      <select id="k" aria-label="Kategori"><option value="">Semua kategori</option></select>
+    </div>
+    <div class="grid" id="list"><p class="meta">Memuat…</p></div>
+    <p class="empty" id="empty">Tidak ada layanan yang cocok.</p>
+  </div>
+  <script>
+    import { muatData, esc, kartuLayanan, pesanGagal } from '../../lib/data';
+
+    const q = document.getElementById('q') as HTMLInputElement;
+    const k = document.getElementById('k') as HTMLSelectElement;
+    const list = document.getElementById('list')!;
+    const empty = document.getElementById('empty')!;
+
+    function f() {
+      const t = q.value.trim().toLowerCase();
+      let n = 0;
+      document.querySelectorAll<HTMLElement>('.svc').forEach((c) => {
+        const ok = (!t || c.dataset.q!.includes(t)) && (!k.value || c.dataset.k === k.value);
+        c.style.display = ok ? '' : 'none';
+        if (ok) n++;
+      });
+      empty.style.display = n ? 'none' : 'block';
+    }
+    q.addEventListener('input', f);
+    k.addEventListener('change', f);
+
+    muatData(
+      (d) => {
+        const urut = [...d.layanan].sort((a, b) => a.nama.localeCompare(b.nama, 'id'));
+        const kategori = [...new Set(urut.map((l) => l.kategori))].sort();
+        const dipilih = k.value;
+        k.innerHTML = '<option value="">Semua kategori</option>' + kategori.map((x) => `<option>${esc(x)}</option>`).join('');
+        k.value = dipilih;
+        list.innerHTML = urut.map((l) => kartuLayanan(l)).join('');
+        empty.textContent = urut.length ? 'Tidak ada layanan yang cocok.' : 'Belum ada layanan.';
+        f();
+      },
+      () => { list.innerHTML = pesanGagal; },
+    );
+  </script>
+</Base>

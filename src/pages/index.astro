@@ -1,29 +1,48 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import ServiceCard from '../components/ServiceCard.astro';
 import site from '../data/site.json';
-const layanan = (await getCollection('layanan')).slice(0, 6);
-const instansi = (await getCollection('instansi')).sort((a, b) => a.data.urutan - b.data.urutan);
-const berita = (await getCollection('berita')).sort((a, b) => +b.data.tanggal - +a.data.tanggal).slice(0, 3);
-const fmt = (d: Date) => d.toLocaleDateString('id-ID', { dateStyle: 'long' });
 ---
 <Base>
   <div class="wrap">
     <section class="hero">
-      <h1>{site.nama}<br />{site.daerah}</h1>
-      <p>{site.tagline}</p>
+      <h1 id="h-judul">{site.nama}<br />{site.daerah}</h1>
+      <p id="h-tagline">{site.tagline}</p>
       <div class="row"><a class="btn" href="/layanan">Cari layanan</a><a class="btn alt" href="/kontak">Lokasi &amp; jam layanan</a></div>
     </section>
-    <section class="blk"><div class="grid">
-      {site.capaian.map((c) => <div class="card stat"><b>{c.nilai.toLocaleString('id-ID')}{c.satuan ? ' ' + c.satuan : ''}</b><span>{c.label}</span></div>)}
-    </div></section>
-    <section class="blk"><h2>Layanan unggulan</h2><div class="grid">{layanan.map((l) => <ServiceCard {...l} />)}</div></section>
-    <section class="blk"><h2>Instansi di MPP</h2><div class="grid">
-      {instansi.map((i) => <div class="card"><h3>{i.data.nama}</h3><p>{i.data.loket}</p></div>)}
-    </div></section>
-    <section class="blk"><h2>Berita terbaru</h2><div class="grid">
-      {berita.map((b) => <a class="card" href={`/berita/${b.id}`}><span class="meta">{fmt(b.data.tanggal)}</span><h3>{b.data.judul}</h3><p>{b.data.ringkas}</p></a>)}
-    </div></section>
+    <section class="blk"><div class="grid" id="capaian"></div></section>
+    <section class="blk"><h2>Layanan unggulan</h2><div class="grid" id="layanan"><p class="meta">Memuat…</p></div></section>
+    <section class="blk"><h2>Instansi di MPP</h2><div class="grid" id="instansi"></div></section>
+    <section class="blk"><h2>Berita terbaru</h2><div class="grid" id="berita"></div></section>
   </div>
 </Base>
+
+<script>
+  import { muatData, esc, kartuLayanan, tanggalIndo, pesanGagal } from '../lib/data';
+
+  const el = (id: string) => document.getElementById(id)!;
+
+  muatData(
+    (d) => {
+      el('h-judul').innerHTML = `${esc(d.situs.nama)}<br />${esc(d.situs.daerah)}`;
+      el('h-tagline').textContent = d.situs.tagline;
+
+      el('capaian').innerHTML = d.situs.capaian
+        .map((c) => `<div class="card stat"><b>${c.nilai.toLocaleString('id-ID')}${c.satuan ? ' ' + esc(c.satuan) : ''}</b><span>${esc(c.label)}</span></div>`)
+        .join('');
+
+      const unggulan = d.layanan.filter((l) => l.unggulan);
+      const tampil = (unggulan.length ? unggulan : d.layanan).slice(0, 6);
+      el('layanan').innerHTML = tampil.length ? tampil.map((l) => kartuLayanan(l)).join('') : '<p class="meta">Belum ada layanan.</p>';
+
+      el('instansi').innerHTML = d.instansi.length
+        ? d.instansi.map((i) => `<div class="card"><h3>${esc(i.nama)}</h3><p>${esc(i.loket)}</p></div>`).join('')
+        : '<p class="meta">Belum ada instansi.</p>';
+
+      const terbaru = d.berita.slice(0, 3);
+      el('berita').innerHTML = terbaru.length
+        ? terbaru.map((b) => `<a class="card" href="/berita/detail?id=${encodeURIComponent(b.id)}"><span class="meta">${esc(tanggalIndo(b.tanggal))}</span><h3>${esc(b.judul)}</h3><p>${esc(b.ringkas)}</p></a>`).join('')
+        : '<p class="meta">Belum ada berita.</p>';
+    },
+    () => { el('layanan').innerHTML = pesanGagal; },
+  );
+</script>

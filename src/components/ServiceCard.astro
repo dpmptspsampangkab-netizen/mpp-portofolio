@@ -1,8 +1,0 @@
----
-const { id, data } = Astro.props;
----
-<a class="card svc" href={`/layanan/${id}`} data-q={`${data.nama} ${data.instansi} ${data.kategori} ${data.ringkas}`.toLowerCase()} data-k={data.kategori}>
-  <span class="tag">{data.kategori}</span>
-  <h3>{data.nama}</h3>
-  <p>{data.instansi} · {data.waktu}</p>
-</a>
