@@ -2,34 +2,44 @@
 import Base from '../../layouts/Base.astro';
 ---
 <Base title="Detail layanan" description="Syarat dan alur layanan di Mal Pelayanan Publik.">
-  <div class="wrap prose" id="isi"><p class="meta">Memuat…</p></div>
+  <div class="wrap" id="konten"><p class="meta">Memuat…</p></div>
   <script>
     import { muatData, esc, tanggalIndo, paragraf, pesanGagal } from '../../lib/data';
 
     const id = new URLSearchParams(location.search).get('id') ?? '';
-    const isi = document.getElementById('isi')!;
-    const kembali = '<p><a class="btn alt" href="/layanan">← Semua layanan</a></p>';
+    const isi = document.getElementById('konten')!;
+    const kembali = '<a class="btn alt" href="/layanan">← Semua layanan</a>';
 
     muatData(
       (d, segar) => {
         const l = d.layanan.find((x) => x.id === id);
         if (!l) {
-          if (segar) isi.innerHTML = `<div class="page-head"><h1>Layanan tidak ditemukan</h1></div>${kembali}`;
+          if (segar) isi.innerHTML = `<div class="page-head"><h1>Layanan tidak ditemukan</h1></div><div class="row">${kembali}</div>`;
           return;
         }
         document.title = `${l.nama} — ${d.situs.nama}`;
+        const poin = (a: string[], urut: boolean) => a.length
+          ? `<${urut ? 'ol' : 'ul'} class="poin${urut ? ' urut' : ''}">${a.map((s) => `<li>${esc(s)}</li>`).join('')}</${urut ? 'ol' : 'ul'}>`
+          : '<p class="meta">Belum diisi.</p>';
         isi.innerHTML = `
           <div class="page-head"><span class="tag">${esc(l.kategori)}</span><h1>${esc(l.nama)}</h1><p>${esc(l.ringkas)}</p></div>
-          <div class="card" style="margin-bottom:16px"><table>
-            <tr><th>Instansi</th><td>${esc(l.instansi)}</td></tr>
-            <tr><th>Biaya</th><td>${esc(l.biaya)}</td></tr>
-            <tr><th>Waktu proses</th><td>${esc(l.waktu)}</td></tr>
-          </table></div>
-          <h2>Syarat</h2><ul>${l.syarat.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
-          <h2>Alur</h2><ol>${l.alur.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
-          ${paragraf(l.catatan)}
-          ${l.diperbarui ? `<p class="meta">Diperbarui ${esc(tanggalIndo(l.diperbarui))}</p>` : ''}
-          ${kembali}`;
+          <div class="detail">
+            <div class="utama">
+              <section class="card"><h2>Syarat</h2>${poin(l.syarat, false)}</section>
+              <section class="card"><h2>Alur</h2>${poin(l.alur, true)}</section>
+              ${l.catatan ? `<section class="card catatan"><h2>Catatan</h2>${paragraf(l.catatan)}</section>` : ''}
+            </div>
+            <aside class="card dark info">
+              <h3>Informasi</h3>
+              <dl>
+                <dt>Instansi</dt><dd>${esc(l.instansi || '-')}</dd>
+                <dt>Biaya</dt><dd>${esc(l.biaya)}</dd>
+                <dt>Waktu proses</dt><dd>${esc(l.waktu)}</dd>
+              </dl>
+              ${l.diperbarui ? `<p class="meta">Diperbarui ${esc(tanggalIndo(l.diperbarui))}</p>` : ''}
+            </aside>
+          </div>
+          <div class="row">${kembali}</div>`;
       },
       () => { isi.innerHTML = pesanGagal; },
     );

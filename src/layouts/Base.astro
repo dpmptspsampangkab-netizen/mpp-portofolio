@@ -22,6 +22,10 @@ const active = (h: string) => (h === '/' ? path === '/' : path === h || path.sta
   <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
   <meta property="og:title" content={full} />
   <meta property="og:description" content={description} />
+  <script is:inline>
+    // Pasang wallpaper terakhir secepat mungkin agar tidak berkedip.
+    try { var w = localStorage.getItem('mpp-wp'); if (w) document.documentElement.style.setProperty('--wp', 'url("' + w + '")'); } catch (e) {}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
@@ -45,13 +49,18 @@ const active = (h: string) => (h === '/' ? path === '/' : path === h || path.sta
     </div></footer>
   </div>
   <script>
-    import { muatData, esc } from '../lib/data';
+    import { muatData, esc, ambilWallpaper } from '../lib/data';
 
     const b = document.getElementById('mb'), n = document.getElementById('nv');
     b?.addEventListener('click', () => { const o = n!.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); });
 
     // Nama situs, daerah, dan alamat di header/footer mengikuti Pengaturan di admin.
     muatData((d) => {
+      const wp = ambilWallpaper(d.situs.wallpaper);
+      try {
+        if (wp) { document.documentElement.style.setProperty('--wp', `url("${wp}")`); localStorage.setItem('mpp-wp', wp); }
+        else { document.documentElement.style.removeProperty('--wp'); localStorage.removeItem('mpp-wp'); }
+      } catch { /* abaikan */ }
       const sp = document.querySelector('.brand span');
       if (sp) {
         if (sp.firstChild) sp.firstChild.nodeValue = d.situs.nama;

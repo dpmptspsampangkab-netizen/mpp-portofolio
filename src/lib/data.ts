@@ -16,11 +16,19 @@ export interface Galeri { id: string; judul: string; url: string; keterangan: st
 
 const teks = (v: unknown): string => (v === undefined || v === null ? '' : String(v));
 const baris = (v: unknown): string[] => teks(v).split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+// Hapus penomoran/butir yang diketik admin ("1. ", "2) ", "- ", "• ") agar tidak dobel dengan daftar situs.
+const poin = (v: unknown): string[] => baris(v).map((x) => x.replace(/^(?:\d{1,2}\s*[.)]|[-•*])\s+/, '')).filter(Boolean);
 const angka = (v: unknown, def = 0): number => {
   const s = teks(v).trim().replace(',', '.');
   if (!s) return def;
   const n = Number(s);
   return Number.isFinite(n) ? n : def;
+};
+
+// Hanya alamat https yang aman dipakai sebagai latar (tanpa tanda kutip/kurung/spasi).
+export const ambilWallpaper = (v: unknown): string => {
+  const u = teks(v).trim();
+  return /^https:\/\/[^\s"'()<>\\]+$/.test(u) ? u : '';
 };
 
 export function normalisasi(raw: any) {
@@ -33,8 +41,8 @@ export function normalisasi(raw: any) {
     kategori: teks(r.kategori) || 'Lainnya',
     instansi: teks(r.instansi),
     ringkas: teks(r.ringkas),
-    syarat: baris(r.syarat),
-    alur: baris(r.alur),
+    syarat: poin(r.syarat),
+    alur: poin(r.alur),
     biaya: teks(r.biaya) || '-',
     waktu: teks(r.waktu) || '-',
     catatan: teks(r.catatan),
@@ -71,6 +79,7 @@ export function normalisasi(raw: any) {
     daerah: ambil('daerah', site.daerah),
     tagline: ambil('tagline', site.tagline),
     logo: site.logo,
+    wallpaper: ambilWallpaper(p.wallpaper),
     alamat: ambil('alamat', site.alamat),
     telepon: ambil('telepon', site.telepon),
     whatsapp: ambil('whatsapp', site.whatsapp),
