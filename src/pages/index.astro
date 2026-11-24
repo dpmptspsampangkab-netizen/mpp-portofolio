@@ -5,9 +5,13 @@ import site from '../data/site.json';
 <Base>
   <div class="wrap">
     <section class="hero">
-      <h1 id="h-judul">{site.nama}<br />{site.daerah}</h1>
-      <p id="h-tagline">{site.tagline}</p>
-      <div class="row"><a class="btn" href="/layanan">Cari layanan</a><a class="btn alt" href="/kontak">Lokasi &amp; jam layanan</a></div>
+      <div class="hero-text">
+        <h1 id="h-judul">{site.nama}<br />{site.daerah}</h1>
+        <p id="h-tagline">{site.tagline}</p>
+        <div class="row"><a class="btn" href="/layanan">Cari layanan</a><a class="btn alt" href="/kontak">Lokasi &amp; jam layanan</a></div>
+        <div class="sebaran" id="sebaran"></div>
+      </div>
+      <aside class="card dark" id="jam" aria-label="Jam layanan"><h3>Jam layanan</h3><p class="meta">Memuat…</p></aside>
     </section>
     <section class="blk"><div class="grid" id="capaian"></div></section>
     <section class="blk"><h2>Layanan unggulan</h2><div class="grid" id="layanan"><p class="meta">Memuat…</p></div></section>
@@ -18,13 +22,36 @@ import site from '../data/site.json';
 
 <script>
   import { muatData, esc, kartuLayanan, tanggalIndo, pesanGagal } from '../lib/data';
+  import type { Data } from '../lib/data';
 
   const el = (id: string) => document.getElementById(id)!;
+
+  // Bilah pil: sebaran layanan per kategori (dihitung dari data nyata).
+  function sebaran(d: Data): string {
+    const total = d.layanan.length;
+    if (!total) return '';
+    const hitung = new Map<string, number>();
+    d.layanan.forEach((l) => hitung.set(l.kategori, (hitung.get(l.kategori) ?? 0) + 1));
+    const urut = [...hitung.entries()].sort((a, b) => b[1] - a[1]);
+    const atas = urut.slice(0, 3);
+    const sisa = urut.slice(3).reduce((s, [, n]) => s + n, 0);
+    if (sisa) atas.push(['Lainnya', sisa]);
+    const kolom = atas.map(([k, n], i) => {
+      const lebar = Math.max(n, total * 0.12);
+      return `<div class="pill-col" style="flex:${lebar} 1 0"><span class="pill-label">${esc(k)}</span><div class="pill p${i}">${Math.round((n / total) * 100)}%</div></div>`;
+    });
+    return `<div class="judul">Sebaran layanan per kategori</div><div class="pills">${kolom.join('')}</div>`;
+  }
 
   muatData(
     (d) => {
       el('h-judul').innerHTML = `${esc(d.situs.nama)}<br />${esc(d.situs.daerah)}`;
       el('h-tagline').textContent = d.situs.tagline;
+      el('sebaran').innerHTML = sebaran(d);
+
+      el('jam').innerHTML = `<h3>Jam layanan</h3><table>${d.situs.jam
+        .map((j) => `<tr><td>${esc(j.hari)}</td><td>${esc(j.jam)}</td></tr>`)
+        .join('')}</table><p style="margin-top:16px"><a class="btn alt" href="/kontak">Lokasi &amp; kontak</a></p>`;
 
       el('capaian').innerHTML = d.situs.capaian
         .map((c) => `<div class="card stat"><b>${c.nilai.toLocaleString('id-ID')}${c.satuan ? ' ' + esc(c.satuan) : ''}</b><span>${esc(c.label)}</span></div>`)

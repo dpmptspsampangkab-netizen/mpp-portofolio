@@ -23,24 +23,27 @@ const active = (h: string) => (h === '/' ? path === '/' : path === h || path.sta
   <meta property="og:title" content={full} />
   <meta property="og:description" content={description} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
 </head>
 <body>
   <a class="skip" href="#isi">Lewati ke konten</a>
-  <header class="site">
-    <div class="wrap bar">
-      <a class="brand" href="/"><img src={site.logo} alt="" /><span>{site.nama}<small>{site.daerah}</small></span></a>
-      <button class="menu-btn" id="mb" aria-expanded="false" aria-controls="nv">Menu</button>
-      <nav id="nv" aria-label="Utama">
-        <ul>{nav.map(([h, t]) => <li><a href={h} aria-current={active(h) ? 'page' : undefined}>{t}</a></li>)}</ul>
-      </nav>
-    </div>
-  </header>
-  <main id="isi"><slot /></main>
-  <footer class="site"><div class="wrap" id="ft">
-    <strong>{site.nama} {site.daerah}</strong><br />{site.alamat}<br />
-    © {new Date().getFullYear()} {site.nama} {site.daerah}
-  </div></footer>
+  <div class="shell">
+    <header class="site">
+      <div class="wrap bar">
+        <a class="brand" href="/"><img src={site.logo} alt="" /><span>{site.nama}<small>{site.daerah}</small></span></a>
+        <button class="menu-btn" id="mb" aria-expanded="false" aria-controls="nv">Menu</button>
+        <nav id="nv" aria-label="Utama">
+          <ul>{nav.map(([h, t]) => <li><a href={h} aria-current={active(h) ? 'page' : undefined}>{t}</a></li>)}</ul>
+        </nav>
+      </div>
+    </header>
+    <main id="isi"><slot /></main>
+    <footer class="site"><div class="wrap" id="ft">
+      <strong>{site.nama} {site.daerah}</strong><br />{site.alamat}<br />
+      © {new Date().getFullYear()} {site.nama} {site.daerah}
+    </div></footer>
+  </div>
   <script>
     import { muatData, esc } from '../lib/data';
 
