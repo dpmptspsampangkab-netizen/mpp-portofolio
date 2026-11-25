@@ -49,10 +49,19 @@ const active = (h: string) => (h === '/' ? path === '/' : path === h || path.sta
     </div></footer>
   </div>
   <script>
-    import { muatData, esc, ambilWallpaper } from '../lib/data';
+    import { muatData, esc, ambilWallpaper, API_URL } from '../lib/data';
 
     const b = document.getElementById('mb'), n = document.getElementById('nv');
     b?.addEventListener('click', () => { const o = n!.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); });
+
+    // Hitung kunjungan: sekali per browser per hari; tidak menghitung saat pengembangan lokal.
+    try {
+      const hari = new Date().toISOString().slice(0, 10);
+      if (!/^(localhost|127\.|\[?::1)/.test(location.hostname) && localStorage.getItem('mpp-hit') !== hari) {
+        localStorage.setItem('mpp-hit', hari);
+        fetch(API_URL.replace('api=1', 'hit=1'), { keepalive: true }).catch(() => {});
+      }
+    } catch { /* abaikan */ }
 
     // Nama situs, daerah, dan alamat di header/footer mengikuti Pengaturan di admin.
     muatData((d) => {

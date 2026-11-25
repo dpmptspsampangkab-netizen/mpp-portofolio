@@ -74,6 +74,9 @@ export function normalisasi(raw: any) {
     id: teks(r.id), judul: teks(r.judul), url: teks(r.url), keterangan: teks(r.keterangan),
   })).filter((g: Galeri) => g.id && g.url);
 
+  // Pengunjung = hitungan otomatis tahun berjalan + angka awal (opsional) dari Pengaturan.
+  const pengunjung = angka(raw?.kunjungan) + angka(p.pengunjung);
+
   const jam = baris(p.jam).map((l) => {
     const [hari, ...sisa] = l.split('|');
     return { hari: hari.trim(), jam: sisa.join('|').trim() };
@@ -102,7 +105,7 @@ export function normalisasi(raw: any) {
     capaian: [
       { label: 'Instansi di MPP', nilai: instansi.length, satuan: '', titik: titik(instansi.length), skala: '1 titik = 1 instansi' },
       { label: 'Jenis layanan', nilai: layanan.length, satuan: '', titik: titik(layanan.length), skala: '1 titik = 1 layanan' },
-      { label: 'Pengunjung per tahun', nilai: angka(p.pengunjung), satuan: '', titik: titik(Math.ceil(angka(p.pengunjung) / 1000)), skala: '1 titik = 1.000 pengunjung' },
+      { label: 'Pengunjung per tahun', nilai: pengunjung, satuan: '', titik: titik(Math.ceil(pengunjung / 1000)), skala: '1 titik = 1.000 pengunjung' },
       { label: 'Indeks kepuasan', nilai: angka(p.kepuasan), satuan: '/ 100', titik: titik(Math.round(angka(p.kepuasan) / 2)), skala: '1 titik = 2 poin' },
     ],
   };
