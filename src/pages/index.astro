@@ -8,7 +8,7 @@ import site from '../data/site.json';
       <div class="hero-text">
         <h1 id="h-judul">{site.nama}<br />{site.daerah}</h1>
         <p id="h-tagline">{site.tagline}</p>
-        <div class="row"><a class="btn" href="/layanan">Cari layanan</a><a class="btn alt" href="/kontak">Lokasi &amp; jam layanan</a></div>
+        <div class="row"><a class="btn" href="/layanan">Cari layanan</a><a class="btn alt" href="/kontak">Lokasi &amp; jam layanan</a><a class="btn line" id="b-aduan" href="/kontak">Pengaduan</a></div>
         <div class="sebaran" id="sebaran"></div>
       </div>
       <aside class="card dark" id="jam" aria-label="Jam layanan"><h3>Jam layanan</h3><p class="meta">Memuat…</p></aside>
@@ -48,6 +48,9 @@ import site from '../data/site.json';
       el('h-judul').innerHTML = `${esc(d.situs.nama)}<br />${esc(d.situs.daerah)}`;
       el('h-tagline').textContent = d.situs.tagline;
       el('sebaran').innerHTML = sebaran(d);
+      // Tombol Pengaduan: tautan diisi admin di Pengaturan (kunci pengaduanLink).
+      const ad = el('b-aduan') as HTMLAnchorElement;
+      if (d.situs.pengaduanLink) { ad.href = d.situs.pengaduanLink; ad.target = '_blank'; ad.rel = 'noopener'; }
 
       el('jam').innerHTML = `<h3>Jam layanan</h3><table>${d.situs.jam
         .map((j) => `<tr><td>${esc(j.hari)}</td><td>${esc(j.jam)}</td></tr>`)

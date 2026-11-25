@@ -80,6 +80,7 @@ export function normalisasi(raw: any) {
     tagline: ambil('tagline', site.tagline),
     logo: site.logo,
     wallpaper: ambilWallpaper(p.wallpaper),
+    pengaduanLink: ambilWallpaper(p.pengaduanLink),
     alamat: ambil('alamat', site.alamat),
     telepon: ambil('telepon', site.telepon),
     whatsapp: ambil('whatsapp', site.whatsapp),
