@@ -13,7 +13,7 @@ import site from '../data/site.json';
       </div>
       <aside class="card dark" id="jam" aria-label="Jam layanan"><h3>Jam layanan</h3><p class="meta">Memuat…</p></aside>
     </section>
-    <section class="blk"><div class="grid" id="capaian"></div></section>
+    <section class="blk"><div class="kpis" id="capaian"></div></section>
     <section class="blk"><div class="panel">
       <h2>Layanan unggulan</h2><p class="sub">Klik layanan untuk melihat syarat dan alurnya.</p>
       <div class="tiles" id="layanan"><p class="meta">Memuat…</p></div>
@@ -67,9 +67,14 @@ import site from '../data/site.json';
         .map((j) => `<tr><td>${esc(j.hari)}</td><td>${esc(j.jam)}</td></tr>`)
         .join('')}</table><p style="margin-top:16px"><a class="btn alt" href="/kontak">Lokasi &amp; kontak</a></p>`;
 
-      el('capaian').innerHTML = d.situs.capaian
-        .map((c) => `<div class="card stat"><b>${c.nilai.toLocaleString('id-ID')}${c.satuan ? ' ' + esc(c.satuan) : ''}</b><span>${esc(c.label)}</span></div>`)
-        .join('');
+      el('capaian').innerHTML = d.situs.capaian.map((c, i) => {
+        const titik = Array.from({ length: 50 }, (_, k) => {
+          const idx = (4 - Math.floor(k / 10)) * 10 + (k % 10); // isi dari baris bawah
+          return `<i${idx < c.titik ? ' class="on"' : ''}></i>`;
+        }).join('');
+        return `<div class="kpi k${i % 4}"><b>${c.nilai.toLocaleString('id-ID')}${c.satuan ? ' <em>' + esc(c.satuan) + '</em>' : ''}</b><span>${esc(c.label)}</span>` +
+          `<div class="dots" role="img" aria-label="${esc(c.label)}: ${esc(c.skala)}">${titik}</div><small>${esc(c.skala)}</small></div>`;
+      }).join('');
 
       const unggulan = d.layanan.filter((l) => l.unggulan);
       const tampil = (unggulan.length ? unggulan : d.layanan).slice(0, 6);

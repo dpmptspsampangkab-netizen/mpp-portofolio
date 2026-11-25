@@ -25,6 +25,9 @@ const angka = (v: unknown, def = 0): number => {
   return Number.isFinite(n) ? n : def;
 };
 
+// Jumlah titik terisi pada kartu capaian (maks. 50 titik = 10 x 5).
+const titik = (n: number): number => Math.max(0, Math.min(50, Math.round(n)));
+
 // Hanya alamat https yang aman dipakai sebagai latar (tanpa tanda kutip/kurung/spasi).
 export const ambilWallpaper = (v: unknown): string => {
   const u = teks(v).trim();
@@ -92,10 +95,10 @@ export function normalisasi(raw: any) {
       maklumat: ambil('maklumat', site.tentang.maklumat),
     },
     capaian: [
-      { label: 'Instansi di MPP', nilai: instansi.length, satuan: '' },
-      { label: 'Jenis layanan', nilai: layanan.length, satuan: '' },
-      { label: 'Pengunjung per tahun', nilai: angka(p.pengunjung), satuan: '' },
-      { label: 'Indeks kepuasan', nilai: angka(p.kepuasan), satuan: '/ 100' },
+      { label: 'Instansi di MPP', nilai: instansi.length, satuan: '', titik: titik(instansi.length), skala: '1 titik = 1 instansi' },
+      { label: 'Jenis layanan', nilai: layanan.length, satuan: '', titik: titik(layanan.length), skala: '1 titik = 1 layanan' },
+      { label: 'Pengunjung per tahun', nilai: angka(p.pengunjung), satuan: '', titik: titik(Math.ceil(angka(p.pengunjung) / 1000)), skala: '1 titik = 1.000 pengunjung' },
+      { label: 'Indeks kepuasan', nilai: angka(p.kepuasan), satuan: '/ 100', titik: titik(Math.round(angka(p.kepuasan) / 2)), skala: '1 titik = 2 poin' },
     ],
   };
 
