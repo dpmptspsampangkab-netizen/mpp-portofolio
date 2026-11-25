@@ -4,6 +4,9 @@ import site from '../data/site.json';
 export const API_URL =
   'https://script.google.com/macros/s/AKfycbwsZY7uMYOpOt3fTPPNjJhEYNmrCs8D3eFhGzNPS81-8TqAhgyUg6ZP7GsabIAq5ArL/exec?api=1';
 const KEY = 'mpp-data-v1';
+// Tautan bawaan formulir pengaduan; admin bisa menggantinya lewat Pengaturan (kunci pengaduanLink).
+const PENGADUAN_BAWAAN =
+  'https://script.google.com/macros/s/AKfycbzjx4KxqYw0IEPbaMUqtIbB8HU49ntjx8xi40tVdp4E6p7FHtPStpAs7Ar3iWLckDYo/exec';
 
 export interface Layanan {
   id: string; nama: string; kategori: string; instansi: string; ringkas: string;
@@ -83,7 +86,9 @@ export function normalisasi(raw: any) {
     tagline: ambil('tagline', site.tagline),
     logo: site.logo,
     wallpaper: ambilWallpaper(p.wallpaper),
-    pengaduanLink: ambilWallpaper(p.pengaduanLink),
+    pengaduanLink: ambilWallpaper(p.pengaduanLink) || PENGADUAN_BAWAAN,
+    pengaduanTeks: ambil('pengaduanTeks', 'Buat pengaduan'),
+    barcode: ambilWallpaper(p.barcode),
     alamat: ambil('alamat', site.alamat),
     telepon: ambil('telepon', site.telepon),
     whatsapp: ambil('whatsapp', site.whatsapp),

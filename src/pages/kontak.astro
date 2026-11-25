@@ -5,11 +5,13 @@ import Base from '../layouts/Base.astro';
   <div class="wrap">
     <div class="page-head"><h1>Kontak &amp; lokasi</h1></div>
     <div class="cols" id="kontak"><p class="meta">Memuat…</p></div>
+    <div id="aduan"></div>
   </div>
   <script>
     import { muatData, esc, paragraf, pesanGagal } from '../lib/data';
 
     const el = document.getElementById('kontak')!;
+    const ad = document.getElementById('aduan')!;
     const aman = (u: string) => (/^https?:\/\//i.test(u) ? u : '#');
 
     muatData(
@@ -24,6 +26,14 @@ import Base from '../layouts/Base.astro';
             <p>Telepon: <a href="tel:${esc(s.telepon.replace(/[^+\d]/g, ''))}">${esc(s.telepon)}</a></p>
             <p>WhatsApp: <a href="https://wa.me/${esc(s.whatsapp.replace(/\D/g, ''))}" target="_blank" rel="noopener">Kirim pesan</a></p>
             <p>Email: <a href="mailto:${esc(s.email)}">${esc(s.email)}</a></p></div>`;
+
+        // Kartu pengaduan: barcode (diunggah admin) + tombol.
+        const foto = s.barcode ? `<img class="qr" src="${esc(s.barcode)}" alt="Barcode formulir pengaduan" width="180" height="180" />` : '';
+        ad.innerHTML = s.pengaduanLink
+          ? `<div class="card aduan${foto ? '' : ' tanpa'}">${foto}<div><h3>Pengaduan &amp; konsultasi</h3>
+              <p>Sampaikan pengaduan atau masukan layanan secara online${foto ? ', atau pindai barcode di samping dengan kamera ponsel' : ''}.</p>
+              <p style="margin-top:14px"><a class="btn" href="${esc(s.pengaduanLink)}" target="_blank" rel="noopener">${esc(s.pengaduanTeks)}</a></p></div></div>`
+          : '';
       },
       () => { el.innerHTML = pesanGagal; },
     );
