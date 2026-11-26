@@ -24,7 +24,7 @@ import site from '../data/site.json';
       <h2>Instansi di MPP</h2><p class="sub">Instansi yang melayani di Mal Pelayanan Publik.</p>
       <div class="tiles" id="instansi"></div>
     </div></section>
-    <section class="blk"><h2>Berita terbaru</h2><div class="grid" id="berita"></div></section>
+    <section class="blk"><div class="head-row"><h2>Berita terbaru</h2><a class="more" href="/berita">Semua berita</a></div><div class="nw-grid" id="berita"></div></section>
   </div>
 </Base>
 
@@ -89,7 +89,15 @@ import site from '../data/site.json';
 
       const terbaru = d.berita.slice(0, 3);
       el('berita').innerHTML = terbaru.length
-        ? terbaru.map((b, j) => `<a class="card" data-g data-gr="1,0.65" style="--i:${j};--s:${j % 2 ? -1 : 1}" href="/berita/detail?id=${encodeURIComponent(b.id)}"><span class="meta">${esc(tanggalIndo(b.tanggal))}</span><h3>${esc(b.judul)}</h3><p>${esc(b.ringkas)}</p></a>`).join('')
+        ? terbaru.map((b, j) => {
+            const gb = String((b as any).gambar || '').trim();
+            const foto = gb
+              ? `<div class="nw-img"><img src="${esc(gb)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('kosong');this.remove()" /></div>`
+              : '<div class="nw-img kosong"></div>';
+            return `<a class="nw" data-g data-gr="1,0.65" style="--i:${j};--s:${j % 2 ? -1 : 1}" href="/berita/detail?id=${encodeURIComponent(b.id)}">${foto}` +
+              `<div class="nw-body"><time class="nw-tgl">${esc(tanggalIndo(b.tanggal))}</time><h3>${esc(b.judul)}</h3></div>` +
+              `<div class="nw-foot"><span>Baca selengkapnya</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div></a>`;
+          }).join('')
         : '<p class="meta">Belum ada berita.</p>';
     },
     () => { el('layanan').innerHTML = pesanGagal; },

@@ -275,9 +275,34 @@ a.tile:hover { translate: 0 -2px; box-shadow: 0 12px 22px -12px rgba(10, 60, 38,
 @media (max-width: 600px) {
   html.gulir .hero-text { transform: translate3d(0, calc(var(--p, 0) * 40px), 0) scale(calc(1 - var(--p, 0) * 0.03)); }
   html.gulir .hero > aside { transform: translate3d(0, calc(var(--p, 0) * -28px), 0); }
-  html.gulir .kpi, html.gulir .tile, html.gulir #berita .card { --dy: 22px; }
+  html.gulir .kpi, html.gulir .tile, html.gulir #berita .nw { --dy: 22px; }
   .deco .d1 { width: 300px; height: 300px; right: -120px; top: -110px; }
   .deco .d2 { display: none; } .hasil .baris { grid-template-columns: 1fr 1fr; } .hasil .baris .batang { grid-column: 1 / -1; order: 3; } }
+
+/* ---------- Kartu berita bergambar (beranda; dipakai juga daftar berita) ---------- */
+.head-row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.head-row h2 { margin: 0 !important; }
+.more { font-size: 0.9rem; font-weight: 600; color: var(--dark); text-decoration: none; padding: 8px 18px; border-radius: 999px; box-shadow: inset 0 0 0 1.5px var(--line); background: #fff; transition: background 0.2s, color 0.2s; }
+.more:hover { background: var(--dark); color: #fff; }
+.nw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 18px; }
+.nw {
+  display: flex; flex-direction: column; overflow: hidden; border-radius: var(--r-md);
+  background: #fff; color: inherit; text-decoration: none;
+  border: 1px solid var(--line); box-shadow: 0 10px 24px -20px rgba(10, 60, 38, 0.5);
+  transition: translate 0.2s, box-shadow 0.2s;
+}
+.nw:hover { translate: 0 -3px; box-shadow: 0 18px 30px -18px rgba(10, 60, 38, 0.55); }
+.nw-img { aspect-ratio: 16 / 10; background: #e1f0e7; overflow: hidden; }
+.nw-img img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.nw:hover .nw-img img { transform: scale(1.04); }
+.nw-img.kosong { background: var(--dark-grad); position: relative; }
+.nw-img.kosong::after { content: ''; position: absolute; inset: 0; opacity: 0.18; background: repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 10px); }
+.nw-body { padding: 16px 18px 18px; flex: 1; }
+.nw-tgl { display: block; font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.nw-body h3 { font-weight: 600; font-size: 1rem; line-height: 1.4; margin: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.nw-foot { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-top: 1px solid var(--line); font-size: 0.88rem; font-weight: 600; color: var(--green); }
+.nw-foot svg { transition: translate 0.2s; }
+.nw:hover .nw-foot svg { translate: 4px 0; }
 
 /* ---------- Kartu pengaduan (kontak) ---------- */
 #aduan { margin-top: 16px; }
@@ -371,10 +396,10 @@ html.gulir .panel[data-g] {
   transform: translateY(calc((1 - var(--p, 1)) * 40px)) scale(calc(0.96 + 0.04 * var(--p, 1)));
   opacity: calc(0.35 + 0.65 * var(--p, 1));
 }
-html.gulir .tile[data-g], html.gulir #berita .card[data-g] { --q: clamp(0, calc(var(--p, 1) * 1.6 - var(--i, 0) * 0.14), 1); opacity: var(--q); }
+html.gulir .tile[data-g], html.gulir #berita .nw[data-g] { --q: clamp(0, calc(var(--p, 1) * 1.6 - var(--i, 0) * 0.14), 1); opacity: var(--q); }
 html.gulir #layanan .tile[data-g] { transform: translateY(calc((1 - var(--q)) * var(--dy, 36px))) scale(calc(0.94 + 0.06 * var(--q))); }
 html.gulir #instansi .tile[data-g] { transform: translateX(calc((1 - var(--q)) * var(--s, 1) * 44px)) scale(calc(0.96 + 0.04 * var(--q))); }
-html.gulir #berita .card[data-g] { transform: translateY(calc((1 - var(--q)) * 46px)) rotate(calc((1 - var(--q)) * var(--s, 1) * 2.5deg)); }
+html.gulir #berita .nw[data-g] { transform: translateY(calc((1 - var(--q)) * 46px)) rotate(calc((1 - var(--q)) * var(--s, 1) * 2.5deg)); }
 html.gulir footer.site[data-g] {
   will-change: transform;
   transform: translateY(calc((1 - var(--p, 1)) * 60px)) scale(calc(0.95 + 0.05 * var(--p, 1)));
