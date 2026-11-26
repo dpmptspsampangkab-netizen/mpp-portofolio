@@ -313,7 +313,7 @@ a.tile:hover { translate: 0 -2px; box-shadow: 0 12px 22px -12px rgba(10, 60, 38,
 }
 
 /* ---------- Baca berita (tanpa kartu, lebar seragam) ---------- */
-.baca { max-width: 920px; padding: 34px 0 6px; }
+.baca { max-width: none; padding: 34px 0 6px; }
 .baca h1 { font-weight: 600; font-size: clamp(1.9rem, 4vw, 2.9rem); letter-spacing: -0.03em; line-height: 1.12; margin: 8px 0 22px; }
 .baca .foto { display: block; width: 100%; max-height: 480px; object-fit: cover; border-radius: var(--r-md); margin: 0 0 24px; }
 .baca .isi-teks { font-size: 1.04rem; line-height: 1.85; color: #243a2f; }
