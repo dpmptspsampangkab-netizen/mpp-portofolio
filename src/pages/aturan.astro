@@ -30,7 +30,7 @@ import Base from '../layouts/Base.astro';
 
 <script>
   import { esc } from '../lib/data';
-  import { muatAturan, kategoriUrut, unduhUrl, aman } from '../lib/aturan';
+  import { muatAturan, kategoriUrut, unduhUrl, aman, tglIndo, ukuranTeks } from '../lib/aturan';
   import type { Aturan } from '../lib/aturan';
 
   const el = (id: string) => document.getElementById(id)!;
@@ -48,9 +48,11 @@ import Base from '../layouts/Base.astro';
       ? `<a class="dt-btn" href="${esc(lihat)}" target="_blank" rel="noopener">${MATA}<span>Lihat</span></a>` +
         `<a class="dt-btn unduh" href="${esc(unduhUrl(lihat))}" target="_blank" rel="noopener">${UNDUH}<span>Unduh</span></a>`
       : '<span class="dt-none">Berkas belum tersedia</span>';
+    const uk = ukuranTeks(a.ukuran);
+    const sub = [tglIndo(a.tanggal), uk ? `Size: ${uk}` : ''].filter(Boolean).join(' \u00b7 ');
     return `<div class="dt-row" role="row">` +
       `<div class="dt-doc" role="cell"><span class="dok-ico dt-ico">${BERKAS}</span>` +
-      `<div class="dt-ttl"><strong>${esc(a.judul)}</strong>${a.keterangan ? `<small>${esc(a.keterangan)}</small>` : ''}</div></div>` +
+      `<div class="dt-ttl"><strong>${esc(a.judul)}</strong>${sub ? `<small>${esc(sub)}</small>` : ''}</div></div>` +
       `<div class="dt-c dt-kat" role="cell"><span class="mtag">${esc(a.kategori)}</span></div>` +
       `<div class="dt-c" role="cell" data-l="Nomor">${esc(a.nomor || '-')}</div>` +
       `<div class="dt-c" role="cell" data-l="Tahun">${esc(a.tahun || '-')}</div>` +
@@ -66,7 +68,7 @@ import Base from '../layouts/Base.astro';
       : '';
     const q = (el('cari') as HTMLInputElement).value.trim().toLowerCase();
     const hasil = semua
-      .filter((a) => (!aktif || a.kategori === aktif) && (!q || `${a.judul} ${a.nomor} ${a.tahun} ${a.keterangan}`.toLowerCase().includes(q)))
+      .filter((a) => (!aktif || a.kategori === aktif) && (!q || `${a.judul} ${a.nomor} ${a.tahun} ${a.kategori}`.toLowerCase().includes(q)))
       .sort((a, b) => a.urutan - b.urutan || String(b.tahun).localeCompare(String(a.tahun)) || a.judul.localeCompare(b.judul));
     el('daftar').innerHTML = hasil.map(baris).join('');
     el('kosong').style.display = hasil.length ? 'none' : 'block';

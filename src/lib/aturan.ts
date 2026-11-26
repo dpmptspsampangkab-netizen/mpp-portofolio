@@ -7,7 +7,7 @@ const API_URL: string = String((D as any).API_URL || CADANGAN);
 
 export type Aturan = {
   id: string; judul: string; kategori: string; nomor: string; tahun: string;
-  keterangan: string; berkas: string; urutan: number;
+  keterangan: string; berkas: string; urutan: number; tanggal: string; ukuran: number;
 };
 
 const KUNCI = 'mpp-aturan';
@@ -15,6 +15,7 @@ const s = (v: unknown) => String(v ?? '').trim();
 const bersih = (r: any): Aturan => ({
   id: s(r.id), judul: s(r.judul), kategori: s(r.kategori) || 'Umum', nomor: s(r.nomor), tahun: s(r.tahun),
   keterangan: s(r.keterangan), berkas: s(r.berkas), urutan: Number(r.urutan) || 999,
+  tanggal: s(r.tanggal), ukuran: Number(r.ukuran) || 0,
 });
 
 function baca(): { t: number; d: Aturan[] } | null {
@@ -55,4 +56,22 @@ export const aman = (u: string) => (/^(https:\/\/|\/)\S+$/.test(u) ? u : '');
 export function unduhUrl(u: string): string {
   const m = /drive\.google\.com\/file\/d\/([\w-]+)/.exec(u) || /[?&]id=([\w-]+)/.exec(u);
   return m && /drive\.google\.com/.test(u) ? `https://drive.google.com/uc?export=download&id=${m[1]}` : u;
+}
+
+const HARI = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+/** "2026-11-26" -> "Kamis, 26 Nov 2026" (kosong bila format tidak dikenal). */
+export function tglIndo(v: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(v);
+  if (!m) return '';
+  const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], 12));
+  return `${HARI[d.getUTCDay()]}, ${+m[3]} ${BULAN[+m[2] - 1]} ${m[1]}`;
+}
+
+/** Byte -> "281 KB" atau "1,4 MB" (kosong bila ukuran tidak diketahui). */
+export function ukuranTeks(b: number): string {
+  if (!b || b <= 0) return '';
+  if (b < 1024 * 1024) return `${Math.max(1, Math.round(b / 1024))} KB`;
+  return `${(b / 1048576).toFixed(1).replace('.', ',')} MB`;
 }
