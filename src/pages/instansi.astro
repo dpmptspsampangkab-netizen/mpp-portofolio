@@ -1,27 +1,43 @@
 ---
 import Base from '../layouts/Base.astro';
 ---
-<Base title="Instansi" description="Instansi yang melayani di Mal Pelayanan Publik.">
+<Base title="Instansi">
   <div class="wrap">
-    <div class="page-head"><h1>Instansi</h1><p>Instansi yang melayani di MPP.</p></div>
-    <div class="grid" id="list"><p class="meta">Memuat…</p></div>
+    <section class="page-head">
+      <h1>Instansi</h1>
+      <p>Instansi yang melayani di MPP.</p>
+    </section>
+    <div class="nw-grid" id="daftar"><p class="meta">Memuat…</p></div>
   </div>
-  <script>
-    import { muatData, esc, paragraf, pesanGagal } from '../lib/data';
-
-    const list = document.getElementById('list')!;
-    const norm = (s: string) => s.trim().toLowerCase();
-
-    muatData(
-      (d) => {
-        list.innerHTML = d.instansi.length
-          ? d.instansi.map((i) => {
-              const n = d.layanan.filter((l) => norm(l.instansi) === norm(i.nama)).length;
-              return `<div class="card">${i.loket ? `<span class="tag">${esc(i.loket)}</span>` : ''}<h3>${esc(i.nama)}</h3>${paragraf(i.deskripsi)}${i.telepon ? `<p>Telp. ${esc(i.telepon)}</p>` : ''}<p>${n} layanan</p></div>`;
-            }).join('')
-          : '<p class="meta">Belum ada instansi.</p>';
-      },
-      () => { list.innerHTML = pesanGagal; },
-    );
-  </script>
 </Base>
+
+<script>
+  import { muatData, esc, pesanGagal } from '../lib/data';
+
+  const el = (id: string) => document.getElementById(id)!;
+  const norm = (s: unknown) => String(s ?? '').trim().toLowerCase();
+  const ada = (s: unknown) => { const t = String(s ?? '').trim(); return t && t !== '-' ? t : ''; };
+
+  const GEDUNG = '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16M15 9h4a1 1 0 0 1 1 1v11M2 21h20M8 8h3M8 12h3M8 16h3"/></svg>';
+  const TELP = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>';
+
+  muatData(
+    (d) => {
+      const urut = [...d.instansi].sort(
+        (a: any, b: any) => (Number(a.urutan) || 999) - (Number(b.urutan) || 999) || String(a.nama).localeCompare(String(b.nama)),
+      );
+      if (!urut.length) { el('daftar').innerHTML = '<p class="meta">Belum ada instansi.</p>'; return; }
+      el('daftar').innerHTML = urut.map((i: any) => {
+        const n = d.layanan.filter((l: any) => norm(l.instansi) === norm(i.nama)).length;
+        const loket = ada(i.loket);
+        const telp = ada(i.telepon);
+        const desk = ada(i.deskripsi);
+        return `<div class="nw ins">` +
+          `<div class="ins-top"><span class="ins-ico">${GEDUNG}</span>${loket ? `<span class="ins-loket">${esc(loket)}</span>` : ''}</div>` +
+          `<div class="nw-body"><h3>${esc(i.nama)}</h3>${desk ? `<p class="ins-desk">${esc(desk)}</p>` : ''}</div>` +
+          `<div class="nw-foot"><span>${n} layanan</span>${telp ? `<span class="ins-telp">${TELP}${esc(telp)}</span>` : ''}</div></div>`;
+      }).join('');
+    },
+    () => { el('daftar').innerHTML = pesanGagal; },
+  );
+</script>
