@@ -1,32 +1,38 @@
 ---
 import Base from '../../layouts/Base.astro';
 ---
-<Base title="Berita" description="Berita dan pengumuman Mal Pelayanan Publik.">
-  <div class="wrap" id="konten"><p class="meta">Memuat…</p></div>
-  <script>
-    import { muatData, esc, tanggalIndo, paragraf, pesanGagal } from '../../lib/data';
-
-    const id = new URLSearchParams(location.search).get('id') ?? '';
-    const isi = document.getElementById('konten')!;
-    const kembali = '<a class="btn alt" href="/berita">← Semua berita</a>';
-
-    muatData(
-      (d, segar) => {
-        const b = d.berita.find((x) => x.id === id);
-        if (!b) {
-          if (segar) isi.innerHTML = `<div class="page-head"><h1>Berita tidak ditemukan</h1></div><div class="row">${kembali}</div>`;
-          return;
-        }
-        document.title = `${b.judul} — ${d.situs.nama}`;
-        const gambar = /^https?:\/\//i.test(b.gambar)
-          ? `<img src="${esc(b.gambar)}" alt="" class="foto" />`
-          : '';
-        isi.innerHTML = `
-          <div class="page-head"><span class="meta">${esc(tanggalIndo(b.tanggal))}</span><h1>${esc(b.judul)}</h1></div>
-          <article class="card artikel">${gambar}<div class="prose">${paragraf(b.isi || b.ringkas)}</div></article>
-          <div class="row">${kembali}</div>`;
-      },
-      () => { isi.innerHTML = pesanGagal; },
-    );
-  </script>
+<Base title="Berita">
+  <div class="wrap">
+    <article class="baca" id="baca"><p class="meta">Memuat…</p></article>
+    <p class="row"><a class="btn alt" href="/berita">← Semua berita</a></p>
+  </div>
 </Base>
+
+<script>
+  import { muatData, esc, tanggalIndo, pesanGagal } from '../../lib/data';
+
+  const el = (id: string) => document.getElementById(id)!;
+  const id = new URLSearchParams(location.search).get('id') || '';
+
+  // Satu baris di Sheets = satu paragraf.
+  const paragraf = (t: string) =>
+    String(t || '').split(/\r?\n+/).map((s) => s.trim()).filter(Boolean).map((s) => `<p>${esc(s)}</p>`).join('');
+
+  muatData(
+    (d) => {
+      const b: any = d.berita.find((x: any) => String(x.id) === id);
+      if (!b) {
+        el('baca').innerHTML = '<h1>Berita tidak ditemukan</h1><p class="meta">Berita mungkin sudah dihapus atau tautannya keliru.</p>';
+        return;
+      }
+      const gb = String(b.gambar || '').trim();
+      const isi = b.isi ?? b.konten ?? b.ringkas ?? '';
+      document.title = `${b.judul} | ${d.situs.nama}`;
+      el('baca').innerHTML =
+        `<time class="meta">${esc(tanggalIndo(b.tanggal))}</time><h1>${esc(b.judul)}</h1>` +
+        (gb ? `<img class="foto" src="${esc(gb)}" alt="" onerror="this.remove()" />` : '') +
+        `<div class="isi-teks">${paragraf(isi)}</div>`;
+    },
+    () => { el('baca').innerHTML = pesanGagal; },
+  );
+</script>
