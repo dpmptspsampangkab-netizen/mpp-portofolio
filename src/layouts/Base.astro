@@ -50,6 +50,8 @@ const active = (h: string) => (h === '/' ? path === '/' : path === h || path.sta
   </div>
   <script>
     import { muatData, esc, ambilWallpaper, API_URL } from '../lib/data';
+    // Menu "Aturan" (dropdown kategori) disisipkan otomatis setelah menu Instansi.
+    import '../lib/menuAturan';
 
     const b = document.getElementById('mb'), n = document.getElementById('nv');
     b?.addEventListener('click', () => { const o = n!.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); });

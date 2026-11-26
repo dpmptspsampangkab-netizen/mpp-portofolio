@@ -92,6 +92,20 @@ nav#nv a[aria-current='page'] { background: var(--dark-grad); color: #fff; }
   padding: 10px 20px; border-radius: 999px; border: 0; background: var(--dark-grad); color: #fff;
 }
 
+
+/* ---------- Header: muat 9 menu ---------- */
+.brand { flex: 0 0 auto; white-space: nowrap; }
+header.site .bar > nav { min-width: 0; }
+
+@media (min-width: 961px) and (max-width: 1280px) {
+  nav#nv ul { gap: 0; padding: 5px; }
+  nav#nv a { padding: 8px 11px; font-size: 0.82rem; }
+}
+@media (min-width: 961px) and (max-width: 1100px) {
+  .brand { padding-right: 14px; }
+  .brand span { font-size: 0.85rem; }
+}
+
 /* ---------- Beranda ---------- */
 .hero {
   display: grid; grid-template-columns: 1.5fr 1fr; gap: 28px; align-items: end;
