@@ -1,7 +1,7 @@
 // Menambahkan menu "Aturan" (dengan sub menu dari kategori) ke navigasi situs.
 // Dipanggil dari Base.astro: <script>import '../lib/menuAturan';</script>
 import { muatAturan, kategoriUrut } from './aturan';
-import { esc } from './data';
+const esc = (t: string) => String(t).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m] as string));
 
 const PANAH = '<svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
 
@@ -27,5 +27,9 @@ function isi(li: HTMLLIElement, kats: string[]) {
     : '';
 }
 
-const li = pasang();
-if (li) muatAturan((d) => isi(li, kategoriUrut(d)), false);
+try {
+  const li = pasang();
+  if (li) muatAturan((d) => isi(li, kategoriUrut(d)), false);
+} catch (e) {
+  console.error('Menu Aturan gagal dipasang:', e);
+}

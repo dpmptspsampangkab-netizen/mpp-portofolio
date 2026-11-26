@@ -1,5 +1,9 @@
 // Data "Aturan" (dokumen) dari Sheets. Dipakai halaman /aturan dan menu situs.
-import { API_URL } from './data';
+import * as D from './data';
+
+// Alamat web app Apps Script. Memakai API_URL dari data.ts bila ada; bila tidak, memakai alamat cadangan ini.
+const CADANGAN = 'https://script.google.com/macros/s/AKfycbwsZY7uMYOpOt3fTPPNjJhEYNmrCs8D3eFhGzNPS81-8TqAhgyUg6ZP7GsabIAq5ArL/exec';
+const API_URL: string = String((D as any).API_URL || CADANGAN);
 
 export type Aturan = {
   id: string; judul: string; kategori: string; nomor: string; tahun: string;
