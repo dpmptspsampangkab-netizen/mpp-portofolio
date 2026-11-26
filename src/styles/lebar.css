@@ -1,12 +1,13 @@
 /* ---------- Lebar seragam: semua halaman, header, dan footer ----------
-   Isi halaman dan header selebar kotak footer (margin 20px dari tepi cangkang).
-   Judul halaman dan teks footer dijajarkan pada garis kiri yang sama (kolom 1060px di tengah). */
+   Header, judul, hero, tabel, dan kotak lain selebar kotak footer (margin 20px dari tepi cangkang). */
 .wrap { max-width: none; padding: 0 20px; }
 
-.page-head, .hero, .baca { padding-left: max(12px, calc((100% - 1060px) / 2 + 12px)); }
-footer.site .wrap { padding: 0 12px 0 max(12px, calc((100% - 1060px) / 2 + 12px)); }
+/* Teks di dalam kotak footer diberi jarak dalam yang wajar. */
+footer.site .wrap { padding: 0 28px; }
 
 @media (max-width: 600px) {
   .wrap { padding: 0 10px; }
   header.site .bar { padding-left: 8px; padding-right: 8px; }
+  .page-head, .hero, .baca { padding-left: 8px; padding-right: 8px; }
+  footer.site .wrap { padding: 0 18px; }
 }
