@@ -26,6 +26,24 @@ import Base from '../layouts/Base.astro';
     </div>
     <p class="empty" id="kosong">Belum ada dokumen yang cocok.</p>
   </div>
+
+  <dialog class="modal dmodal" id="mdok" aria-labelledby="mdok-t">
+    <div class="dm-bar">
+      <strong id="mdok-t"></strong>
+      <div class="dm-act">
+        <a class="dt-btn" id="mdok-tab" href="#" target="_blank" rel="noopener" title="Buka di tab baru">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg><span>Tab baru</span>
+        </a>
+        <a class="dt-btn unduh" id="mdok-unduh" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><span>Unduh</span>
+        </a>
+        <button type="button" class="dm-x" id="mdok-x" aria-label="Tutup">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="dm-body"><iframe id="mdok-f" title="Pratinjau dokumen" allow="fullscreen"></iframe></div>
+  </dialog>
 </Base>
 
 <script>
@@ -45,7 +63,7 @@ import Base from '../layouts/Base.astro';
   function baris(a: Aturan): string {
     const lihat = aman(a.berkas);
     const aksi = lihat
-      ? `<a class="dt-btn" href="${esc(lihat)}" target="_blank" rel="noopener">${MATA}<span>Lihat</span></a>` +
+      ? `<a class="dt-btn" href="${esc(lihat)}" data-lihat="${esc(a.id)}" target="_blank" rel="noopener">${MATA}<span>Lihat</span></a>` +
         `<a class="dt-btn unduh" href="${esc(unduhUrl(lihat))}" target="_blank" rel="noopener">${UNDUH}<span>Unduh</span></a>`
       : '<span class="dt-none">Berkas belum tersedia</span>';
     const uk = ukuranTeks(a.ukuran);
@@ -89,4 +107,40 @@ import Base from '../layouts/Base.astro';
     tampil();
   });
   el('cari').addEventListener('input', tampil);
+
+  // ---- Lihat dokumen dalam modal ----
+  const dlg = el('mdok') as HTMLDialogElement;
+  const frame = el('mdok-f') as HTMLIFrameElement;
+
+  /** Berkas Google Drive memakai halaman pratinjau; selain itu tautan dibuka apa adanya. */
+  function pratinjau(u: string): string {
+    const m = /drive\.google\.com\/file\/d\/([\w-]+)/.exec(u) || /[?&]id=([\w-]+)/.exec(u);
+    return m && /drive\.google\.com/.test(u) ? `https://drive.google.com/file/d/${m[1]}/preview` : u;
+  }
+
+  function buka(a: Aturan) {
+    const u = aman(a.berkas);
+    if (!u) return;
+    el('mdok-t').textContent = a.judul;
+    (el('mdok-tab') as HTMLAnchorElement).href = u;
+    (el('mdok-unduh') as HTMLAnchorElement).href = unduhUrl(u);
+    frame.src = pratinjau(u);
+    if (!dlg.open) dlg.showModal();
+  }
+
+  const tutup = () => { if (dlg.open) dlg.close(); };
+  dlg.addEventListener('close', () => { frame.src = 'about:blank'; });
+  el('mdok-x').addEventListener('click', tutup);
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) tutup(); });
+
+  el('daftar').addEventListener('click', (e) => {
+    const ev = e as MouseEvent;
+    if (ev.button !== 0 || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+    const t = (ev.target as HTMLElement).closest('a[data-lihat]') as HTMLElement | null;
+    if (!t) return;
+    const a = semua.find((x) => x.id === t.dataset.lihat);
+    if (!a) return;
+    e.preventDefault();
+    buka(a);
+  });
 </script>
