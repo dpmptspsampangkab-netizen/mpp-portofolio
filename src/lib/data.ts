@@ -81,6 +81,7 @@ export function normalisasi(raw: any) {
   const kp = raw?.kepuasan ?? {};
   const jumlahNilai = angka(kp.jumlah);
   const kepuasan = jumlahNilai > 0 ? angka(kp.indeks) : angka(p.kepuasan);
+  const sebaranNilai = [0, 1, 2, 3].map((i) => angka(Array.isArray(kp.sebaran) ? kp.sebaran[i] : 0));
 
   const jam = baris(p.jam).map((l) => {
     const [hari, ...sisa] = l.split('|');
@@ -107,6 +108,7 @@ export function normalisasi(raw: any) {
       visi: ambil('visi', site.tentang.visi),
       maklumat: ambil('maklumat', site.tentang.maklumat),
     },
+    penilaian: { jumlah: jumlahNilai, indeks: kepuasan, sebaran: sebaranNilai },
     capaian: [
       { label: 'Instansi di MPP', nilai: instansi.length, satuan: '', titik: titik(instansi.length), skala: '1 titik = 1 instansi', tautan: '' },
       { label: 'Jenis layanan', nilai: layanan.length, satuan: '', titik: titik(layanan.length), skala: '1 titik = 1 layanan', tautan: '' },

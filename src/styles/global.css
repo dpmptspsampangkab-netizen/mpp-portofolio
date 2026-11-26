@@ -248,6 +248,19 @@ a.tile:hover { transform: translateY(-2px); box-shadow: 0 12px 22px -12px rgba(7
 .card.nilai .opsi button:hover:not(:disabled) { background: var(--yellow); transform: translateY(-2px); }
 .card.nilai .opsi button:disabled { opacity: 0.55; cursor: default; }
 
+/* Hasil penilaian */
+.hasil { margin-top: 14px; display: grid; gap: 8px; max-width: 640px; }
+.hasil h4 { margin: 0 0 4px; font-size: 0.95rem; font-weight: 600; }
+.hasil .baris { display: grid; grid-template-columns: 130px 1fr 130px; align-items: center; gap: 12px; font-size: 0.88rem; }
+.hasil .baris b { font-weight: 500; text-align: right; white-space: nowrap; }
+.hasil .batang { height: 12px; border-radius: 999px; background: rgba(0, 0, 0, 0.07); overflow: hidden; }
+.hasil .batang i { display: block; height: 100%; border-radius: 999px; min-width: 0; }
+.hasil .b3 { background: #5fcf9d; }
+.hasil .b2 { background: #9ad86e; }
+.hasil .b1 { background: #f4b860; }
+.hasil .b0 { background: #ef8f8f; }
+@media (max-width: 600px) { .hasil .baris { grid-template-columns: 1fr 1fr; } .hasil .baris .batang { grid-column: 1 / -1; order: 3; } }
+
 /* ---------- Kartu pengaduan (kontak) ---------- */
 #aduan { margin-top: 16px; }
 .card.aduan { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }

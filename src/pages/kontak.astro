@@ -16,6 +16,7 @@ import Base from '../layouts/Base.astro';
         <button type="button" data-n="4"><span aria-hidden="true">😄</span>Sangat baik</button>
       </div>
       <p class="meta" id="nilai-info" role="status" aria-live="polite"></p>
+      <div class="hasil" id="nilai-hasil"></div>
     </section>
   </div>
   <script>
@@ -24,6 +25,25 @@ import Base from '../layouts/Base.astro';
     const el = document.getElementById('kontak')!;
     const ad = document.getElementById('aduan')!;
     const aman = (u: string) => (/^https?:\/\//i.test(u) ? u : '#');
+
+    // Hasil penilaian: jumlah orang per pilihan (dari yang terbaik).
+    const PILIHAN = [
+      { i: 3, ikon: '😄', nama: 'Sangat baik' },
+      { i: 2, ikon: '🙂', nama: 'Baik' },
+      { i: 1, ikon: '😐', nama: 'Kurang baik' },
+      { i: 0, ikon: '😞', nama: 'Tidak baik' },
+    ];
+    const hasil = document.getElementById('nilai-hasil')!;
+    const tampilHasil = (k: { jumlah: number; sebaran: number[] }) => {
+      if (!k || !k.jumlah) { hasil.innerHTML = '<p class="meta">Belum ada penilaian.</p>'; return; }
+      hasil.innerHTML =
+        `<h4>Hasil penilaian (${k.jumlah.toLocaleString('id-ID')} orang)</h4>` +
+        PILIHAN.map((p) => {
+          const n = Number(k.sebaran[p.i] || 0);
+          const pct = Math.round((n / k.jumlah) * 100);
+          return `<div class="baris"><span>${p.ikon} ${p.nama}</span><div class="batang"><i class="b${p.i}" style="width:${pct}%"></i></div><b>${n.toLocaleString('id-ID')} orang · ${pct}%</b></div>`;
+        }).join('');
+    };
 
     // Penilaian kepuasan: satu kali per browser per hari; penanda disimpan setelah server membalas sukses.
     const info = document.getElementById('nilai-info')!;
@@ -42,6 +62,7 @@ import Base from '../layouts/Base.astro';
           if (!j || !j.ok) throw new Error('gagal');
           try { localStorage.setItem('mpp-nilai', hari); } catch { /* abaikan */ }
           const k = j.kepuasan || {};
+          tampilHasil({ jumlah: Number(k.jumlah || 0), sebaran: k.sebaran || [] });
           info.textContent = 'Terima kasih atas penilaian Anda!' + (k.jumlah ? ` Indeks kepuasan saat ini ${Number(k.indeks).toLocaleString('id-ID')} dari ${Number(k.jumlah).toLocaleString('id-ID')} penilaian.` : '');
         } catch {
           kunci_(false);
@@ -53,6 +74,7 @@ import Base from '../layouts/Base.astro';
     muatData(
       (d) => {
         const s = d.situs;
+        tampilHasil(s.penilaian);
         el.innerHTML = `
           <div class="card"><h3>Alamat</h3>${paragraf(s.alamat)}
             <p style="margin-top:12px"><a class="btn alt" href="${esc(aman(s.petaLink))}" target="_blank" rel="noopener">Petunjuk arah</a></p></div>
