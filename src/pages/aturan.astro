@@ -1,0 +1,77 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Aturan">
+  <div class="wrap">
+    <section class="page-head">
+      <h1>Aturan</h1>
+      <p>Dasar hukum, standar pelayanan, dan dokumen resmi MPP. Lihat atau unduh dokumen yang Anda perlukan.</p>
+    </section>
+
+    <div class="chips" id="kat" role="tablist" aria-label="Kategori aturan"></div>
+    <div class="tools">
+      <input id="cari" type="search" placeholder="Cari judul atau nomor aturan…" aria-label="Cari aturan" />
+      <span class="meta tools-n" id="jumlah" aria-live="polite"></span>
+    </div>
+
+    <div class="nw-grid dok-grid" id="daftar"><p class="meta">Memuat…</p></div>
+    <p class="empty" id="kosong">Belum ada dokumen yang cocok.</p>
+  </div>
+</Base>
+
+<script>
+  import { esc } from '../lib/data';
+  import { muatAturan, kategoriUrut, unduhUrl, aman } from '../lib/aturan';
+  import type { Aturan } from '../lib/aturan';
+
+  const el = (id: string) => document.getElementById(id)!;
+  let semua: Aturan[] = [];
+  let aktif = new URLSearchParams(location.search).get('k') || '';
+
+  const BERKAS = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>';
+
+  function kartu(a: Aturan): string {
+    const lihat = aman(a.berkas);
+    const chip = [
+      a.nomor ? `<span class="mchip">Nomor ${esc(a.nomor)}</span>` : '',
+      a.tahun ? `<span class="mchip">Tahun ${esc(a.tahun)}</span>` : '',
+    ].join('');
+    return `<article class="nw dok"><div class="dok-top"><span class="dok-ico">${BERKAS}</span><div class="dok-ttl">` +
+      `<span class="mtag">${esc(a.kategori)}</span><h3>${esc(a.judul)}</h3>${chip ? `<div class="mchips">${chip}</div>` : ''}` +
+      `${a.keterangan ? `<p class="dok-ket">${esc(a.keterangan)}</p>` : ''}</div></div>` +
+      (lihat
+        ? `<div class="dok-act"><a href="${esc(lihat)}" target="_blank" rel="noopener">Lihat</a><a class="unduh" href="${esc(unduhUrl(lihat))}" target="_blank" rel="noopener">Unduh</a></div>`
+        : '<div class="dok-act kosong"><span>Berkas belum tersedia</span></div>') +
+      `</article>`;
+  }
+
+  function tampil() {
+    const kats = kategoriUrut(semua);
+    if (aktif && !kats.includes(aktif)) aktif = '';
+    el('kat').innerHTML = kats.length > 1
+      ? ['', ...kats].map((k) => `<button type="button" role="tab" aria-selected="${k === aktif}" class="${k === aktif ? 'on' : ''}" data-k="${esc(k)}">${k ? esc(k) : 'Semua'}</button>`).join('')
+      : '';
+    const q = (el('cari') as HTMLInputElement).value.trim().toLowerCase();
+    const hasil = semua
+      .filter((a) => (!aktif || a.kategori === aktif) && (!q || `${a.judul} ${a.nomor} ${a.tahun} ${a.keterangan}`.toLowerCase().includes(q)))
+      .sort((a, b) => a.urutan - b.urutan || String(b.tahun).localeCompare(String(a.tahun)) || a.judul.localeCompare(b.judul));
+    el('daftar').innerHTML = hasil.map(kartu).join('');
+    el('kosong').style.display = hasil.length ? 'none' : 'block';
+    el('jumlah').textContent = semua.length ? `${hasil.length} dokumen` : '';
+  }
+
+  muatAturan(
+    (d) => { semua = d; tampil(); },
+    true,
+    () => { el('daftar').innerHTML = '<p class="meta">Data belum bisa dimuat. Coba muat ulang halaman.</p>'; },
+  );
+
+  el('kat').addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('[data-k]') as HTMLElement | null;
+    if (!b) return;
+    aktif = b.dataset.k || '';
+    history.replaceState(null, '', aktif ? `?k=${encodeURIComponent(aktif)}` : location.pathname);
+    tampil();
+  });
+  el('cari').addEventListener('input', tampil);
+</script>

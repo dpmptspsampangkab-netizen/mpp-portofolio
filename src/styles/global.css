@@ -367,6 +367,53 @@ body:has(dialog.modal[open]) { overflow: hidden; }
 .modal-foot { padding: 14px 20px 18px; border-top: 1px solid var(--line); background: #fff; display: flex; justify-content: flex-end; }
 @media (prefers-reduced-motion: reduce) { dialog.modal[open], dialog.modal[open]::backdrop { animation: none; } }
 
+/* ---------- Menu Aturan: sub menu dropdown ---------- */
+nav#nv li.has-sub { position: relative; }
+nav#nv .sub-toggle { display: inline-flex; align-items: center; gap: 4px; }
+nav#nv .sub-toggle .chev { display: none; transition: rotate 0.2s; }
+nav#nv li.ada-sub .sub-toggle .chev { display: block; }
+nav#nv li.ada-sub:hover .sub-toggle .chev, nav#nv li.ada-sub:focus-within .sub-toggle .chev { rotate: 180deg; }
+nav#nv ul.sub-menu {
+  display: block; position: absolute; left: 0; top: calc(100% + 6px); z-index: 30; min-width: 240px; max-width: 320px;
+  margin: 0; padding: 8px; list-style: none; border-radius: 22px; background: #fff;
+  border: 1px solid var(--line); box-shadow: 0 24px 40px -20px rgba(10, 60, 38, 0.45);
+  opacity: 0; visibility: hidden; translate: 0 6px; transition: opacity 0.18s, translate 0.18s, visibility 0.18s;
+}
+nav#nv ul.sub-menu::before { content: ''; position: absolute; left: 0; right: 0; top: -8px; height: 8px; }
+nav#nv li:not(.ada-sub) > ul.sub-menu { display: none; }
+nav#nv li.ada-sub:hover > ul.sub-menu, nav#nv li.ada-sub:focus-within > ul.sub-menu { opacity: 1; visibility: visible; translate: 0 0; }
+nav#nv ul.sub-menu a { display: block; padding: 10px 16px; border-radius: 14px; white-space: normal; }
+nav#nv ul.sub-menu a:hover { background: var(--acc-soft); }
+@media (max-width: 960px) {
+  nav#nv ul.sub-menu {
+    position: static; display: block; min-width: 0; max-width: none; padding: 0 0 4px 14px; border: 0; border-radius: 0;
+    box-shadow: none; background: none; opacity: 1; visibility: visible; translate: 0 0;
+  }
+  nav#nv ul.sub-menu::before { display: none; }
+  nav#nv li.ada-sub .sub-toggle .chev { display: none; }
+  nav#nv ul.sub-menu a { padding: 9px 18px; font-size: 0.84rem; color: var(--muted); }
+}
+
+/* ---------- Halaman Aturan ---------- */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 16px; }
+.chips button { font: inherit; font-size: 0.88rem; font-weight: 600; cursor: pointer; padding: 9px 18px; border-radius: 999px; border: 0; background: var(--glass); color: var(--dark); box-shadow: inset 0 0 0 1px var(--line); transition: background 0.2s, color 0.2s; }
+.chips button:hover { background: var(--acc-soft); }
+.chips button.on { background: var(--dark-grad); color: #fff; box-shadow: none; }
+.dok-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+.nw.dok:hover { translate: 0 0; box-shadow: 0 10px 24px -20px rgba(10, 60, 38, 0.5); }
+.dok-top { flex: 1; display: flex; gap: 14px; align-items: flex-start; padding: 18px 18px 16px; }
+.dok-ico { flex: none; width: 48px; height: 48px; border-radius: 15px; background: var(--acc-soft); color: var(--dark); display: grid; place-items: center; }
+.dok-ttl { min-width: 0; }
+.dok-ttl h3 { margin: 8px 0 0; font-weight: 600; font-size: 1rem; line-height: 1.4; }
+.dok-ttl .mchips { margin-top: 10px; }
+.dok-ket { margin: 10px 0 0; font-size: 0.88rem; line-height: 1.6; color: var(--muted); text-align: left; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.dok-act { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
+.dok-act a { display: block; padding: 13px 18px; text-align: center; font-size: 0.9rem; font-weight: 600; text-decoration: none; color: var(--green); transition: background 0.2s; }
+.dok-act a:hover { background: var(--acc-soft); }
+.dok-act a.unduh { background: var(--dark-grad); color: #fff; }
+.dok-act a.unduh:hover { filter: brightness(1.12); }
+.dok-act.kosong { display: block; padding: 13px 18px; font-size: 0.86rem; color: var(--muted); }
+
 /* ---------- Kartu pengaduan (kontak) ---------- */
 #aduan { margin-top: 16px; }
 .card.aduan { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
