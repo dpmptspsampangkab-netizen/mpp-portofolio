@@ -304,6 +304,14 @@ a.tile:hover { translate: 0 -2px; box-shadow: 0 12px 22px -12px rgba(10, 60, 38,
 .nw-foot svg { transition: translate 0.2s; }
 .nw:hover .nw-foot svg { translate: 4px 0; }
 
+/* ---------- Daftar berita: alat bantu ---------- */
+.tools-n { align-self: center; margin-left: auto; }
+
+/* ---------- Teks rata kiri-kanan (justify) ---------- */
+.prose p, .prose li, .artikel p, .artikel li, .card p:not(.meta), .poin li, .card.catatan p {
+  text-align: justify; text-justify: inter-word; hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word;
+}
+
 /* ---------- Kartu pengaduan (kontak) ---------- */
 #aduan { margin-top: 16px; }
 .card.aduan { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }

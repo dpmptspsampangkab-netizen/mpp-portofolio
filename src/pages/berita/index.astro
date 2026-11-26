@@ -1,22 +1,61 @@
 ---
 import Base from '../../layouts/Base.astro';
 ---
-<Base title="Berita" description="Berita dan pengumuman Mal Pelayanan Publik.">
+<Base title="Berita">
   <div class="wrap">
-    <div class="page-head"><h1>Berita &amp; pengumuman</h1></div>
-    <div class="grid" id="list"><p class="meta">Memuat…</p></div>
-  </div>
-  <script>
-    import { muatData, esc, tanggalIndo, pesanGagal } from '../../lib/data';
+    <section class="page-head">
+      <h1>Berita &amp; pengumuman</h1>
+      <p>Kabar dan informasi terbaru dari Mal Pelayanan Publik.</p>
+    </section>
 
-    const list = document.getElementById('list')!;
-    muatData(
-      (d) => {
-        list.innerHTML = d.berita.length
-          ? d.berita.map((b) => `<a class="card" href="/berita/detail?id=${encodeURIComponent(b.id)}"><span class="meta">${esc(tanggalIndo(b.tanggal))}</span><h3>${esc(b.judul)}</h3><p>${esc(b.ringkas)}</p></a>`).join('')
-          : '<p class="meta">Belum ada berita.</p>';
-      },
-      () => { list.innerHTML = pesanGagal; },
-    );
-  </script>
+    <div class="tools">
+      <input id="cari" type="search" placeholder="Cari berita…" aria-label="Cari berita" />
+      <select id="urut" aria-label="Urutkan berita">
+        <option value="baru">Terbaru</option>
+        <option value="lama">Terlama</option>
+      </select>
+      <span class="meta tools-n" id="jumlah" aria-live="polite"></span>
+    </div>
+
+    <div class="nw-grid" id="daftar"><p class="meta">Memuat…</p></div>
+    <p class="empty" id="kosong">Tidak ada berita yang cocok dengan pencarian.</p>
+  </div>
 </Base>
+
+<script>
+  import { muatData, esc, tanggalIndo, pesanGagal } from '../../lib/data';
+
+  const el = (id: string) => document.getElementById(id)!;
+  const IKON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+  let semua: any[] = [];
+
+  function kartu(b: any): string {
+    const gb = String(b.gambar || '').trim();
+    const foto = gb
+      ? `<div class="nw-img"><img src="${esc(gb)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('kosong');this.remove()" /></div>`
+      : '<div class="nw-img kosong"></div>';
+    return `<a class="nw" href="/berita/detail?id=${encodeURIComponent(b.id)}">${foto}` +
+      `<div class="nw-body"><time class="nw-tgl">${esc(tanggalIndo(b.tanggal))}</time><h3>${esc(b.judul)}</h3></div>` +
+      `<div class="nw-foot"><span>Baca selengkapnya</span>${IKON}</div></a>`;
+  }
+
+  function tampil() {
+    const q = (el('cari') as HTMLInputElement).value.trim().toLowerCase();
+    const lama = (el('urut') as HTMLSelectElement).value === 'lama';
+    const hasil = semua
+      .filter((b) => !q || `${b.judul} ${b.ringkas}`.toLowerCase().includes(q))
+      .sort((a, b) => (lama ? 1 : -1) * String(a.tanggal).localeCompare(String(b.tanggal)));
+    el('daftar').innerHTML = hasil.map(kartu).join('');
+    el('kosong').style.display = hasil.length || !semua.length ? 'none' : 'block';
+    el('jumlah').textContent = semua.length ? `${hasil.length} berita` : '';
+    if (!semua.length) el('daftar').innerHTML = '<p class="meta">Belum ada berita.</p>';
+  }
+
+  muatData(
+    (d) => { semua = d.berita; tampil(); },
+    () => { el('daftar').innerHTML = pesanGagal; },
+  );
+  el('cari').addEventListener('input', tampil);
+  el('urut').addEventListener('change', tampil);
+</script>
