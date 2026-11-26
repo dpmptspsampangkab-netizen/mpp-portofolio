@@ -141,9 +141,9 @@ nav#nv a[aria-current='page'] { background: var(--dark); color: #fff; }
   background: var(--glass); backdrop-filter: blur(8px);
   color: inherit; text-decoration: none;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.85) inset, 0 12px 28px -20px rgba(70, 55, 0, 0.45);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, translate 0.2s, box-shadow 0.2s;
 }
-a.card:hover { transform: translateY(-3px); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.85) inset, 0 18px 30px -18px rgba(70, 55, 0, 0.55); }
+a.card:hover { translate: 0 -3px; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.85) inset, 0 18px 30px -18px rgba(70, 55, 0, 0.55); }
 .card h3 { font-weight: 500; font-size: 1.1rem; margin: 10px 0 6px; line-height: 1.3; }
 .card p { color: var(--muted); font-size: 0.93rem; }
 .card p + p { margin-top: 6px; }
@@ -211,7 +211,12 @@ tr:last-child th, tr:last-child td { border-bottom: 0; }
 .kpi span { display: block; font-size: 0.84rem; font-weight: 500; margin-top: 2px; }
 .kpi .dots { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin: 14px 2px 10px; }
 .kpi .dots i { aspect-ratio: 1; border-radius: 50%; background: var(--off); }
-.kpi .dots i.on { background: var(--on); }
+.kpi .dots i { position: relative; }
+.kpi .dots i.on { background: var(--off); }
+.kpi .dots i.on::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--on);
+  opacity: clamp(0, calc(var(--p, 1) * var(--n, 50) - var(--k, 0)), 1);
+}
 .kpi small { display: block; font-size: 0.72rem; color: var(--muted); }
 .kpi.k0 small { color: rgba(0, 0, 0, 0.6); }
 
@@ -226,7 +231,7 @@ tr:last-child th, tr:last-child td { border-bottom: 0; }
   box-shadow: 0 8px 18px -12px rgba(70, 55, 0, 0.4);
   transition: transform 0.2s, box-shadow 0.2s;
 }
-a.tile:hover { transform: translateY(-2px); box-shadow: 0 12px 22px -12px rgba(70, 55, 0, 0.5); }
+a.tile:hover { translate: 0 -2px; box-shadow: 0 12px 22px -12px rgba(70, 55, 0, 0.5); }
 .tile .ico {
   flex: none; width: 40px; height: 40px; border-radius: 13px; background: #eceae3;
   display: grid; place-items: center; color: var(--ink);
@@ -259,7 +264,12 @@ a.tile:hover { transform: translateY(-2px); box-shadow: 0 12px 22px -12px rgba(7
 .hasil .b2 { background: #9ad86e; }
 .hasil .b1 { background: #f4b860; }
 .hasil .b0 { background: #ef8f8f; }
-@media (max-width: 600px) { .hasil .baris { grid-template-columns: 1fr 1fr; } .hasil .baris .batang { grid-column: 1 / -1; order: 3; } }
+@media (max-width: 600px) {
+  html.gulir .hero-text { transform: translate3d(0, calc(var(--p, 0) * 40px), 0) scale(calc(1 - var(--p, 0) * 0.03)); }
+  html.gulir .hero > aside { transform: translate3d(0, calc(var(--p, 0) * -28px), 0); }
+  html.gulir .kpi, html.gulir .tile, html.gulir #berita .card { --dy: 22px; }
+  .deco .d1 { width: 300px; height: 300px; right: -120px; top: -110px; }
+  .deco .d2 { display: none; } .hasil .baris { grid-template-columns: 1fr 1fr; } .hasil .baris .batang { grid-column: 1 / -1; order: 3; } }
 
 /* ---------- Kartu pengaduan (kontak) ---------- */
 #aduan { margin-top: 16px; }
@@ -318,6 +328,50 @@ footer.site {
   background: var(--dark); color: #cfcdc2; border-radius: var(--r-lg); font-size: 0.92rem;
 }
 footer.site strong { color: #fff; font-weight: 600; font-size: 1rem; }
+
+/* ---------- Efek gulir kontinu (aktif hanya dengan html.gulir) ---------- */
+.gbar, .deco { display: none; }
+.hero { position: relative; }
+.hero-text, .hero > aside { position: relative; z-index: 1; }
+html.gulir .gbar {
+  display: block; position: fixed; inset: 0 0 auto 0; height: 4px; z-index: 60; pointer-events: none;
+  background: var(--yellow); transform-origin: 0 50%; transform: scaleX(var(--sp, 0));
+  box-shadow: 0 1px 6px rgba(70, 55, 0, 0.3);
+}
+html.gulir .deco { display: block; position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.deco i { position: absolute; display: block; border-radius: 50%; }
+.deco .d1 { width: 440px; height: 440px; right: -140px; top: -170px; background: radial-gradient(circle at 40% 40%, rgba(255, 213, 74, 0.5), rgba(255, 213, 74, 0) 68%); }
+.deco .d2 { width: 230px; height: 230px; right: 24%; top: 38%; border: 1.5px solid rgba(0, 0, 0, 0.08); }
+.deco .d3 { width: 90px; height: 90px; left: 52%; top: -30px; background: rgba(255, 213, 74, 0.4); }
+html.gulir .deco .d1 { transform: translate3d(0, calc(var(--p, 0) * 150px), 0); }
+html.gulir .deco .d2 { transform: translate3d(calc(var(--p, 0) * -50px), calc(var(--p, 0) * -110px), 0); }
+html.gulir .deco .d3 { transform: translate3d(0, calc(var(--p, 0) * 240px), 0); }
+html.gulir .hero-text {
+  transform-origin: 0 0; will-change: transform, opacity;
+  transform: translate3d(0, calc(var(--p, 0) * 70px), 0) scale(calc(1 - var(--p, 0) * 0.05));
+  opacity: calc(1 - var(--p, 0) * 0.6);
+}
+html.gulir .hero > aside { will-change: transform; transform: translate3d(0, calc(var(--p, 0) * -55px), 0) rotate(calc(var(--p, 0) * 2deg)); }
+
+html.gulir [data-g] { transition: translate 0.2s, box-shadow 0.2s; }
+html.gulir .kpi {
+  --q: clamp(0, calc(var(--p, 1) * 3 - var(--i, 0) * 0.2), 1);
+  transform: translateY(calc((1 - var(--q)) * var(--dy, 34px)));
+  opacity: calc(0.15 + 0.85 * var(--q));
+}
+html.gulir .panel[data-g] {
+  transform: translateY(calc((1 - var(--p, 1)) * 40px)) scale(calc(0.96 + 0.04 * var(--p, 1)));
+  opacity: calc(0.35 + 0.65 * var(--p, 1));
+}
+html.gulir .tile[data-g], html.gulir #berita .card[data-g] { --q: clamp(0, calc(var(--p, 1) * 1.6 - var(--i, 0) * 0.14), 1); opacity: var(--q); }
+html.gulir #layanan .tile[data-g] { transform: translateY(calc((1 - var(--q)) * var(--dy, 36px))) scale(calc(0.94 + 0.06 * var(--q))); }
+html.gulir #instansi .tile[data-g] { transform: translateX(calc((1 - var(--q)) * var(--s, 1) * 44px)) scale(calc(0.96 + 0.04 * var(--q))); }
+html.gulir #berita .card[data-g] { transform: translateY(calc((1 - var(--q)) * 46px)) rotate(calc((1 - var(--q)) * var(--s, 1) * 2.5deg)); }
+html.gulir footer.site[data-g] {
+  will-change: transform;
+  transform: translateY(calc((1 - var(--p, 1)) * 60px)) scale(calc(0.95 + 0.05 * var(--p, 1)));
+  opacity: calc(0.3 + 0.7 * var(--p, 1));
+}
 
 /* ---------- Layar kecil ---------- */
 @media (max-width: 960px) {

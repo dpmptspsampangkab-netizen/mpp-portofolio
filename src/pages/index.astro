@@ -3,8 +3,10 @@ import Base from '../layouts/Base.astro';
 import site from '../data/site.json';
 ---
 <Base>
+  <div class="gbar" aria-hidden="true"></div>
   <div class="wrap">
-    <section class="hero">
+    <section class="hero" data-g="hero">
+      <div class="deco" aria-hidden="true"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>
       <div class="hero-text">
         <h1 id="h-judul">{site.nama}<br />{site.daerah}</h1>
         <p id="h-tagline">{site.tagline}</p>
@@ -14,11 +16,11 @@ import site from '../data/site.json';
       <aside class="card dark" id="jam" aria-label="Jam layanan"><h3>Jam layanan</h3><p class="meta">Memuat…</p></aside>
     </section>
     <section class="blk"><div class="kpis" id="capaian"></div></section>
-    <section class="blk"><div class="panel">
+    <section class="blk"><div class="panel" data-g>
       <h2>Layanan unggulan</h2><p class="sub">Klik layanan untuk melihat syarat dan alurnya.</p>
       <div class="tiles" id="layanan"><p class="meta">Memuat…</p></div>
     </div></section>
-    <section class="blk"><div class="panel">
+    <section class="blk"><div class="panel" data-g>
       <h2>Instansi di MPP</h2><p class="sub">Instansi yang melayani di Mal Pelayanan Publik.</p>
       <div class="tiles" id="instansi"></div>
     </div></section>
@@ -29,6 +31,7 @@ import site from '../data/site.json';
 <script>
   import { muatData, esc, tanggalIndo, pesanGagal } from '../lib/data';
   import type { Data } from '../lib/data';
+  import { mulaiGulir } from '../lib/gulir';
 
   const el = (id: string) => document.getElementById(id)!;
 
@@ -70,25 +73,27 @@ import site from '../data/site.json';
       el('capaian').innerHTML = d.situs.capaian.map((c, i) => {
         const titik = Array.from({ length: 50 }, (_, k) => {
           const idx = (4 - Math.floor(k / 10)) * 10 + (k % 10); // isi dari baris bawah
-          return `<i${idx < c.titik ? ' class="on"' : ''}></i>`;
+          return idx < c.titik ? `<i class="on" style="--k:${idx}"></i>` : '<i></i>';
         }).join('');
-        return `<div class="kpi k${i % 4}"><b>${c.nilai.toLocaleString('id-ID')}${c.satuan ? ' <em>' + esc(c.satuan) + '</em>' : ''}</b><span>${esc(c.label)}</span>` +
-          `<div class="dots" role="img" aria-label="${esc(c.label)}: ${esc(c.skala)}">${titik}</div><small>${esc(c.skala)}</small>${c.tautan ? `<a class="lnk" href="${esc(c.tautan)}">Beri penilaian →</a>` : ''}</div>`;
+        return `<div class="kpi k${i % 4}" data-g="kpi" style="--i:${i}"><b>${c.nilai.toLocaleString('id-ID')}${c.satuan ? ' <em>' + esc(c.satuan) + '</em>' : ''}</b><span>${esc(c.label)}</span>` +
+          `<div class="dots" style="--n:${c.titik}" role="img" aria-label="${esc(c.label)}: ${esc(c.skala)}">${titik}</div><small>${esc(c.skala)}</small>${c.tautan ? `<a class="lnk" href="${esc(c.tautan)}">Beri penilaian →</a>` : ''}</div>`;
       }).join('');
 
       const unggulan = d.layanan.filter((l) => l.unggulan);
       const tampil = (unggulan.length ? unggulan : d.layanan).slice(0, 6);
-      el('layanan').innerHTML = tampil.length ? tampil.map((l) => `<a class="tile" href="/layanan/detail?id=${encodeURIComponent(l.id)}">${IKON_DOK}<span><b>${esc(l.nama)}</b><small>${esc([l.instansi, l.waktu].filter((x) => x && x !== '-').join(' · '))}</small></span></a>`).join('') : '<p class="meta">Belum ada layanan.</p>';
+      el('layanan').innerHTML = tampil.length ? tampil.map((l, j) => `<a class="tile" data-g data-gr="1,0.7" style="--i:${j % 3}" href="/layanan/detail?id=${encodeURIComponent(l.id)}">${IKON_DOK}<span><b>${esc(l.nama)}</b><small>${esc([l.instansi, l.waktu].filter((x) => x && x !== '-').join(' · '))}</small></span></a>`).join('') : '<p class="meta">Belum ada layanan.</p>';
 
       el('instansi').innerHTML = d.instansi.length
-        ? d.instansi.map((i) => `<div class="tile">${IKON_GEDUNG}<span><b>${esc(i.nama)}</b>${i.loket ? `<small>${esc(i.loket)}</small>` : ''}</span></div>`).join('')
+        ? d.instansi.map((i, j) => `<div class="tile" data-g data-gr="1,0.7" style="--i:${j % 3};--s:${j % 2 ? -1 : 1}">${IKON_GEDUNG}<span><b>${esc(i.nama)}</b>${i.loket ? `<small>${esc(i.loket)}</small>` : ''}</span></div>`).join('')
         : '<p class="meta">Belum ada instansi.</p>';
 
       const terbaru = d.berita.slice(0, 3);
       el('berita').innerHTML = terbaru.length
-        ? terbaru.map((b) => `<a class="card" href="/berita/detail?id=${encodeURIComponent(b.id)}"><span class="meta">${esc(tanggalIndo(b.tanggal))}</span><h3>${esc(b.judul)}</h3><p>${esc(b.ringkas)}</p></a>`).join('')
+        ? terbaru.map((b, j) => `<a class="card" data-g data-gr="1,0.65" style="--i:${j};--s:${j % 2 ? -1 : 1}" href="/berita/detail?id=${encodeURIComponent(b.id)}"><span class="meta">${esc(tanggalIndo(b.tanggal))}</span><h3>${esc(b.judul)}</h3><p>${esc(b.ringkas)}</p></a>`).join('')
         : '<p class="meta">Belum ada berita.</p>';
     },
     () => { el('layanan').innerHTML = pesanGagal; },
   );
+
+  mulaiGulir();
 </script>
