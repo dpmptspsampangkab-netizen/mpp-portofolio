@@ -77,6 +77,11 @@ export function normalisasi(raw: any) {
   // Pengunjung = hitungan otomatis tahun berjalan + angka awal (opsional) dari Pengaturan.
   const pengunjung = angka(raw?.kunjungan) + angka(p.pengunjung);
 
+  // Indeks kepuasan: otomatis dari penilaian pengunjung bila sudah ada; jika belum, memakai angka manual di Pengaturan.
+  const kp = raw?.kepuasan ?? {};
+  const jumlahNilai = angka(kp.jumlah);
+  const kepuasan = jumlahNilai > 0 ? angka(kp.indeks) : angka(p.kepuasan);
+
   const jam = baris(p.jam).map((l) => {
     const [hari, ...sisa] = l.split('|');
     return { hari: hari.trim(), jam: sisa.join('|').trim() };
@@ -103,10 +108,14 @@ export function normalisasi(raw: any) {
       maklumat: ambil('maklumat', site.tentang.maklumat),
     },
     capaian: [
-      { label: 'Instansi di MPP', nilai: instansi.length, satuan: '', titik: titik(instansi.length), skala: '1 titik = 1 instansi' },
-      { label: 'Jenis layanan', nilai: layanan.length, satuan: '', titik: titik(layanan.length), skala: '1 titik = 1 layanan' },
-      { label: 'Pengunjung per tahun', nilai: pengunjung, satuan: '', titik: titik(Math.ceil(pengunjung / 1000)), skala: '1 titik = 1.000 pengunjung' },
-      { label: 'Indeks kepuasan', nilai: angka(p.kepuasan), satuan: '/ 100', titik: titik(Math.round(angka(p.kepuasan) / 2)), skala: '1 titik = 2 poin' },
+      { label: 'Instansi di MPP', nilai: instansi.length, satuan: '', titik: titik(instansi.length), skala: '1 titik = 1 instansi', tautan: '' },
+      { label: 'Jenis layanan', nilai: layanan.length, satuan: '', titik: titik(layanan.length), skala: '1 titik = 1 layanan', tautan: '' },
+      { label: 'Pengunjung per tahun', nilai: pengunjung, satuan: '', titik: titik(Math.ceil(pengunjung / 1000)), skala: '1 titik = 1.000 pengunjung', tautan: '' },
+      {
+        label: 'Indeks kepuasan', nilai: kepuasan, satuan: '/ 100', titik: titik(Math.round(kepuasan / 2)),
+        skala: '1 titik = 2 poin' + (jumlahNilai > 0 ? ` · dari ${jumlahNilai.toLocaleString('id-ID')} penilaian` : ''),
+        tautan: '/kontak#nilai',
+      },
     ],
   };
 

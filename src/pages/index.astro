@@ -73,7 +73,7 @@ import site from '../data/site.json';
           return `<i${idx < c.titik ? ' class="on"' : ''}></i>`;
         }).join('');
         return `<div class="kpi k${i % 4}"><b>${c.nilai.toLocaleString('id-ID')}${c.satuan ? ' <em>' + esc(c.satuan) + '</em>' : ''}</b><span>${esc(c.label)}</span>` +
-          `<div class="dots" role="img" aria-label="${esc(c.label)}: ${esc(c.skala)}">${titik}</div><small>${esc(c.skala)}</small></div>`;
+          `<div class="dots" role="img" aria-label="${esc(c.label)}: ${esc(c.skala)}">${titik}</div><small>${esc(c.skala)}</small>${c.tautan ? `<a class="lnk" href="${esc(c.tautan)}">Beri penilaian →</a>` : ''}</div>`;
       }).join('');
 
       const unggulan = d.layanan.filter((l) => l.unggulan);

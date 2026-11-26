@@ -234,6 +234,20 @@ a.tile:hover { transform: translateY(-2px); box-shadow: 0 12px 22px -12px rgba(7
 .tile b { display: block; font-weight: 500; font-size: 0.97rem; line-height: 1.25; }
 .tile small { display: block; margin-top: 2px; font-size: 0.78rem; color: var(--muted); line-height: 1.3; }
 
+/* ---------- Penilaian kepuasan (kontak) ---------- */
+.kpi .lnk { display: inline-block; margin-top: 8px; font-size: 0.78rem; font-weight: 600; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.card.nilai { margin-top: 16px; }
+.card.nilai h3 { margin-top: 0; font-size: 1.25rem; }
+.card.nilai .opsi { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 8px; }
+.card.nilai .opsi button {
+  font: inherit; font-weight: 500; cursor: pointer; border: 0; background: #fff; color: var(--ink);
+  padding: 10px 20px 10px 14px; border-radius: 999px; box-shadow: 0 8px 18px -12px rgba(70, 55, 0, 0.4);
+  display: inline-flex; align-items: center; gap: 8px; transition: transform 0.2s, background 0.2s;
+}
+.card.nilai .opsi button span { font-size: 1.35rem; line-height: 1; }
+.card.nilai .opsi button:hover:not(:disabled) { background: var(--yellow); transform: translateY(-2px); }
+.card.nilai .opsi button:disabled { opacity: 0.55; cursor: default; }
+
 /* ---------- Kartu pengaduan (kontak) ---------- */
 #aduan { margin-top: 16px; }
 .card.aduan { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }

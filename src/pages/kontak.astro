@@ -6,13 +6,49 @@ import Base from '../layouts/Base.astro';
     <div class="page-head"><h1>Kontak &amp; lokasi</h1></div>
     <div class="cols" id="kontak"><p class="meta">Memuat…</p></div>
     <div id="aduan"></div>
+    <section class="card nilai" id="nilai">
+      <h3>Bagaimana pelayanan kami?</h3>
+      <p>Penilaian Anda membantu kami meningkatkan mutu pelayanan. Dapat dikirim satu kali per hari.</p>
+      <div class="opsi" id="opsi">
+        <button type="button" data-n="1"><span aria-hidden="true">😞</span>Tidak baik</button>
+        <button type="button" data-n="2"><span aria-hidden="true">😐</span>Kurang baik</button>
+        <button type="button" data-n="3"><span aria-hidden="true">🙂</span>Baik</button>
+        <button type="button" data-n="4"><span aria-hidden="true">😄</span>Sangat baik</button>
+      </div>
+      <p class="meta" id="nilai-info" role="status" aria-live="polite"></p>
+    </section>
   </div>
   <script>
-    import { muatData, esc, paragraf, pesanGagal } from '../lib/data';
+    import { muatData, esc, paragraf, pesanGagal, API_URL } from '../lib/data';
 
     const el = document.getElementById('kontak')!;
     const ad = document.getElementById('aduan')!;
     const aman = (u: string) => (/^https?:\/\//i.test(u) ? u : '#');
+
+    // Penilaian kepuasan: satu kali per browser per hari; penanda disimpan setelah server membalas sukses.
+    const info = document.getElementById('nilai-info')!;
+    const tombol = Array.from(document.querySelectorAll<HTMLButtonElement>('#opsi button'));
+    const hari = new Date().toISOString().slice(0, 10);
+    const kunci = (() => { try { return localStorage.getItem('mpp-nilai'); } catch { return null; } })();
+    const kunci_ = (v: boolean) => tombol.forEach((t) => (t.disabled = v));
+    if (kunci === hari) { kunci_(true); info.textContent = 'Terima kasih, penilaian Anda hari ini sudah tercatat.'; }
+    tombol.forEach((t) =>
+      t.addEventListener('click', async () => {
+        kunci_(true);
+        info.textContent = 'Mengirim…';
+        try {
+          const r = await fetch(API_URL.replace('api=1', 'nilai=' + t.dataset.n));
+          const j = await r.json();
+          if (!j || !j.ok) throw new Error('gagal');
+          try { localStorage.setItem('mpp-nilai', hari); } catch { /* abaikan */ }
+          const k = j.kepuasan || {};
+          info.textContent = 'Terima kasih atas penilaian Anda!' + (k.jumlah ? ` Indeks kepuasan saat ini ${Number(k.indeks).toLocaleString('id-ID')} dari ${Number(k.jumlah).toLocaleString('id-ID')} penilaian.` : '');
+        } catch {
+          kunci_(false);
+          info.textContent = 'Penilaian belum terkirim. Coba lagi sebentar lagi.';
+        }
+      }),
+    );
 
     muatData(
       (d) => {
