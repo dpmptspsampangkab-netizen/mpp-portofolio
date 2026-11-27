@@ -745,3 +745,6 @@ header.site .bar > nav { min-width: 0; }
   .brand { padding-right: 14px; }
   .brand span { font-size: 0.85rem; }
 }
+
+/* Alur: penjelasan di bawah judul langkah */
+.poin li .ket { display: block; margin-top: 4px; }

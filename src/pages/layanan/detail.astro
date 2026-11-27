@@ -4,7 +4,7 @@ import Base from '../../layouts/Base.astro';
 <Base title="Detail layanan" description="Syarat dan alur layanan di Mal Pelayanan Publik.">
   <div class="wrap" id="konten"><p class="meta">Memuat…</p></div>
   <script>
-    import { muatData, esc, tanggalIndo, paragraf, pesanGagal } from '../../lib/data';
+    import { muatData, esc, tanggalIndo, paragraf, tebal, pesanGagal } from '../../lib/data';
 
     const id = new URLSearchParams(location.search).get('id') ?? '';
     const isi = document.getElementById('konten')!;
@@ -18,8 +18,19 @@ import Base from '../../layouts/Base.astro';
           return;
         }
         document.title = `${l.nama} — ${d.situs.nama}`;
+        // Alur: baris judul (**Judul**) dan penjelasan di bawahnya menjadi satu langkah.
+        const langkah = (a: string[]) => {
+          const hasil: { judul: boolean; html: string }[] = [];
+          a.forEach((s) => {
+            const judul = /^\*\*(?:(?!\*\*).)+\*\*\s*:?$/.test(s);
+            const akhir = hasil[hasil.length - 1];
+            if (!judul && akhir?.judul) akhir.html += `<span class="ket">${tebal(s)}</span>`;
+            else hasil.push({ judul, html: tebal(s) });
+          });
+          return hasil.map((x) => x.html);
+        };
         const poin = (a: string[], urut: boolean) => a.length
-          ? `<${urut ? 'ol' : 'ul'} class="poin${urut ? ' urut' : ''}">${a.map((s) => `<li>${esc(s)}</li>`).join('')}</${urut ? 'ol' : 'ul'}>`
+          ? `<${urut ? 'ol' : 'ul'} class="poin${urut ? ' urut' : ''}">${(urut ? langkah(a) : a.map(tebal)).map((h) => `<li>${h}</li>`).join('')}</${urut ? 'ol' : 'ul'}>`
           : '<p class="meta">Belum diisi.</p>';
         isi.innerHTML = `
           <div class="page-head"><span class="tag">${esc(l.kategori)}</span><h1>${esc(l.nama)}</h1><p>${esc(l.ringkas)}</p></div>

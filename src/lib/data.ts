@@ -166,6 +166,9 @@ export async function muatData(
 export const esc = (s: unknown): string =>
   teks(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
 
+/** Teks aman untuk HTML; **teks** ditampilkan tebal. */
+export const tebal = (s: unknown): string => esc(s).replace(/\*\*(?=\S)([^\n]*?\S)\*\*/g, '<strong>$1</strong>');
+
 export function tanggalIndo(s: string): string {
   if (!s) return '';
   const d = new Date(s + 'T00:00:00');
@@ -175,7 +178,7 @@ export function tanggalIndo(s: string): string {
 /** Teks bebas -> paragraf HTML aman (baris kosong = paragraf baru). */
 export function paragraf(s: string): string {
   return teks(s).split(/\n{2,}/).map((x) => x.trim()).filter(Boolean)
-    .map((x) => `<p>${esc(x).replace(/\n/g, '<br />')}</p>`).join('');
+    .map((x) => `<p>${tebal(x).replace(/\n/g, '<br />')}</p>`).join('');
 }
 
 export function kartuLayanan(l: Layanan): string {

@@ -9,14 +9,14 @@ import Base from '../../layouts/Base.astro';
 </Base>
 
 <script>
-  import { muatData, esc, tanggalIndo, pesanGagal } from '../../lib/data';
+  import { muatData, esc, tebal, tanggalIndo, pesanGagal } from '../../lib/data';
 
   const el = (id: string) => document.getElementById(id)!;
   const id = new URLSearchParams(location.search).get('id') || '';
 
   // Satu baris di Sheets = satu paragraf.
   const paragraf = (t: string) =>
-    String(t || '').split(/\r?\n+/).map((s) => s.trim()).filter(Boolean).map((s) => `<p>${esc(s)}</p>`).join('');
+    String(t || '').split(/\r?\n+/).map((s) => s.trim()).filter(Boolean).map((s) => `<p>${tebal(s)}</p>`).join('');
 
   muatData(
     (d) => {
