@@ -60,8 +60,8 @@ const active = (h: string) => (h === '/' ? path === '/' : path === h || path.sta
     </header>
     <main id="isi"><slot /></main>
     <footer class="site">
-      <a class="ft-qr" id="ft-qr" target="_blank" rel="noopener" hidden>
-        <img alt="Barcode formulir pengaduan" width="104" height="104" loading="lazy" />
+      <a class="ft-qr" id="ft-qr" target="_blank" rel="noopener" hidden style="display:none">
+        <img alt="Barcode formulir pengaduan" width="104" height="104" />
         <span>Pindai untuk pengaduan</span>
       </a>
       <div class="wrap" id="ft">
@@ -110,14 +110,18 @@ const active = (h: string) => (h === '/' ? path === '/' : path === h || path.sta
         const sm = sp.querySelector('small');
         if (sm) sm.textContent = d.situs.daerah;
       }
-      // Barcode pengaduan di footer: tampil hanya bila sudah diunggah admin.
+      // Barcode pengaduan di footer: baru tampil setelah gambarnya benar-benar termuat.
       const qr = document.getElementById('ft-qr') as HTMLAnchorElement | null;
       if (qr) {
         const img = qr.querySelector('img')!;
+        const tampil = (v: boolean) => { qr.hidden = !v; qr.style.display = v ? '' : 'none'; };
         qr.href = d.situs.pengaduanLink;
-        img.onerror = () => { qr.hidden = true; };
-        if (d.situs.barcode && img.getAttribute('src') !== d.situs.barcode) img.src = d.situs.barcode;
-        qr.hidden = !d.situs.barcode;
+        img.onerror = () => tampil(false);
+        img.onload = () => tampil(true);
+        if (d.situs.barcode) {
+          if (img.getAttribute('src') !== d.situs.barcode) img.src = d.situs.barcode;
+          else if (img.complete && img.naturalWidth > 0) tampil(true);
+        } else tampil(false);
       }
       const ft = document.getElementById('ft');
       if (ft) {
