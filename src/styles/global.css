@@ -66,8 +66,7 @@ header.site .bar {
 .brand {
   display: inline-flex; align-items: center; gap: 10px;
   text-decoration: none;
-  padding: 7px 20px 7px 8px;
-  border: 1.5px solid var(--dark);
+  padding: 7px 0;
   border-radius: 999px;
 }
 .brand img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #fff; }
@@ -751,3 +750,7 @@ header.site .bar > nav { min-width: 0; }
 
 /* Logo unggahan admin: tampil utuh, tanpa dipotong bulat */
 .brand img.logo-unggah { width: auto; min-width: 28px; max-width: 76px; height: 40px; border-radius: 0; object-fit: contain; background: transparent; }
+
+/* Layanan: tabel (memakai gaya .dt dari tabel Aturan) */
+.dt-layanan .dt-head, .dt-layanan .dt-row { grid-template-columns: minmax(0, 2fr) 130px minmax(110px, 1fr) minmax(150px, 1fr) 100px; }
+.dt-layanan #list .dt-row:first-child { border-top: 0; }

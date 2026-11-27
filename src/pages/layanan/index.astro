@@ -8,16 +8,42 @@ import Base from '../../layouts/Base.astro';
       <input type="search" id="q" placeholder="Cari layanan, mis. KK, NIB…" aria-label="Cari layanan" />
       <select id="k" aria-label="Kategori"><option value="">Semua kategori</option></select>
     </div>
-    <div class="grid" id="list"><p class="meta">Memuat…</p></div>
+    <div class="dt dt-layanan" id="tabel" role="table" aria-label="Daftar layanan">
+      <div class="dt-head" role="row">
+        <span role="columnheader">Layanan</span>
+        <span role="columnheader">Kategori</span>
+        <span role="columnheader">Instansi</span>
+        <span role="columnheader">Waktu</span>
+        <span role="columnheader">Aksi</span>
+      </div>
+      <div id="list" role="rowgroup"><p class="meta dt-msg">Memuat…</p></div>
+    </div>
     <p class="empty" id="empty">Tidak ada layanan yang cocok.</p>
   </div>
   <script>
-    import { muatData, esc, kartuLayanan, pesanGagal } from '../../lib/data';
+    import { muatData, esc, pesanGagal } from '../../lib/data';
+    import type { Layanan } from '../../lib/data';
 
     const q = document.getElementById('q') as HTMLInputElement;
     const k = document.getElementById('k') as HTMLSelectElement;
     const list = document.getElementById('list')!;
     const empty = document.getElementById('empty')!;
+
+    const svg = (isi: string, u: number) => `<svg viewBox="0 0 24 24" width="${u}" height="${u}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${isi}</svg>`;
+    const DOK = svg('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>', 22);
+    const MATA = svg('<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', 16);
+
+    function baris(l: Layanan): string {
+      const cari = `${l.nama} ${l.instansi} ${l.kategori} ${l.ringkas}`.toLowerCase();
+      return `<div class="dt-row svc" role="row" data-q="${esc(cari)}" data-k="${esc(l.kategori)}">` +
+        `<div class="dt-doc" role="cell"><span class="dok-ico dt-ico">${DOK}</span>` +
+        `<div class="dt-ttl"><strong>${esc(l.nama)}</strong>${l.ringkas ? `<small>${esc(l.ringkas)}</small>` : ''}</div></div>` +
+        `<div class="dt-c" role="cell"><span class="mtag">${esc(l.kategori)}</span></div>` +
+        `<div class="dt-c" role="cell" data-l="Instansi">${esc(l.instansi || '-')}</div>` +
+        `<div class="dt-c" role="cell" data-l="Waktu">${esc(l.waktu)}</div>` +
+        `<div class="dt-act" role="cell"><a class="dt-btn" href="/layanan/detail?id=${encodeURIComponent(l.id)}" aria-label="Lihat ${esc(l.nama)}">${MATA}<span>Lihat</span></a></div>` +
+        `</div>`;
+    }
 
     function f() {
       const t = q.value.trim().toLowerCase();
@@ -28,6 +54,7 @@ import Base from '../../layouts/Base.astro';
         if (ok) n++;
       });
       empty.style.display = n ? 'none' : 'block';
+      document.getElementById('tabel')!.style.display = n ? '' : 'none';
     }
     q.addEventListener('input', f);
     k.addEventListener('change', f);
@@ -39,11 +66,11 @@ import Base from '../../layouts/Base.astro';
         const dipilih = k.value;
         k.innerHTML = '<option value="">Semua kategori</option>' + kategori.map((x) => `<option>${esc(x)}</option>`).join('');
         k.value = dipilih;
-        list.innerHTML = urut.map((l) => kartuLayanan(l)).join('');
+        list.innerHTML = urut.map(baris).join('');
         empty.textContent = urut.length ? 'Tidak ada layanan yang cocok.' : 'Belum ada layanan.';
         f();
       },
-      () => { list.innerHTML = pesanGagal; },
+      () => { list.innerHTML = pesanGagal.replace('class="meta"', 'class="meta dt-msg"'); },
     );
   </script>
 </Base>
