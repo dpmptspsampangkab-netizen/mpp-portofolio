@@ -15,7 +15,8 @@ export interface Layanan {
 }
 export interface Instansi { id: string; nama: string; loket: string; telepon: string; deskripsi: string; urutan: number }
 export interface Berita { id: string; judul: string; tanggal: string; ringkas: string; isi: string; gambar: string }
-export interface Galeri { id: string; judul: string; url: string; keterangan: string }
+// Satu album: `foto` berisi semua tautan foto (kolom url, satu per baris); `url` = foto pertama (sampul).
+export interface Galeri { id: string; judul: string; url: string; foto: string[]; keterangan: string }
 
 const teks = (v: unknown): string => (v === undefined || v === null ? '' : String(v));
 const baris = (v: unknown): string[] => teks(v).split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
@@ -70,9 +71,11 @@ export function normalisasi(raw: any) {
   })).filter((b: Berita) => b.id && b.judul)
     .sort((a: Berita, b: Berita) => b.tanggal.localeCompare(a.tanggal));
 
-  const galeri: Galeri[] = (raw?.galeri ?? []).map((r: any) => ({
-    id: teks(r.id), judul: teks(r.judul), url: teks(r.url), keterangan: teks(r.keterangan),
-  })).filter((g: Galeri) => g.id && g.url);
+  // Kolom url boleh berisi beberapa tautan foto (satu per baris); data lama dengan satu foto tetap berlaku.
+  const galeri: Galeri[] = (raw?.galeri ?? []).map((r: any) => {
+    const foto = teks(r.url).split(/\s+/).filter((u) => /^(https?:\/\/|\/)/i.test(u));
+    return { id: teks(r.id), judul: teks(r.judul), url: foto[0] ?? '', foto, keterangan: teks(r.keterangan) };
+  }).filter((g: Galeri) => g.id && g.url);
 
   // Pengunjung = hitungan otomatis tahun berjalan + angka awal (opsional) dari Pengaturan.
   const pengunjung = angka(raw?.kunjungan) + angka(p.pengunjung);

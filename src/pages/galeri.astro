@@ -5,33 +5,93 @@ import Base from '../layouts/Base.astro';
   <div class="wrap">
     <div class="page-head"><h1>Galeri</h1><p>Foto kegiatan dan fasilitas.</p></div>
     <div class="gal" id="gal"><p class="meta">Memuat…</p></div>
-    <dialog id="dlg"><img id="dimg" alt="" /><p id="dcap"></p><form method="dialog" style="padding:0 16px 16px"><button class="btn">Tutup</button></form></dialog>
+    <dialog id="dlg" class="lb">
+      <div class="lb-stage" id="stage">
+        <button type="button" class="lb-nav lb-prev" id="prev" aria-label="Foto sebelumnya">&#8249;</button>
+        <img id="dimg" alt="" />
+        <button type="button" class="lb-nav lb-next" id="next" aria-label="Foto berikutnya">&#8250;</button>
+      </div>
+      <div class="lb-info"><div><strong id="dttl"></strong><p id="dcap"></p></div><span class="lb-no" id="dno"></span></div>
+      <div class="lb-thumbs" id="dthumbs"></div>
+      <form method="dialog" style="padding:0 16px 16px"><button class="btn">Tutup</button></form>
+    </dialog>
   </div>
   <script>
-    import { muatData, esc, pesanGagal } from '../lib/data';
+    import { muatData, esc, pesanGagal, type Galeri } from '../lib/data';
 
     const dlg = document.getElementById('dlg') as HTMLDialogElement;
     const im = document.getElementById('dimg') as HTMLImageElement;
+    const ttl = document.getElementById('dttl')!;
     const cap = document.getElementById('dcap')!;
+    const no = document.getElementById('dno')!;
+    const thumbs = document.getElementById('dthumbs')!;
+    const prev = document.getElementById('prev') as HTMLButtonElement;
+    const next = document.getElementById('next') as HTMLButtonElement;
     const gal = document.getElementById('gal')!;
 
+    let album: Galeri[] = [];
+    let a = 0; // album yang dibuka
+    let f = 0; // foto yang tampil
+
+    // Tautan Google Drive (lh3) bisa diminta dalam ukuran lebih kecil agar cepat dimuat.
+    const ukuran = (u: string, w: number) => u.replace(/(=w)\d+$/, '$1' + w);
+
+    function tampil() {
+      const g = album[a];
+      if (!g) return;
+      const n = g.foto.length;
+      f = (f + n) % n;
+      im.src = g.foto[f];
+      im.alt = g.judul;
+      ttl.textContent = g.judul;
+      cap.textContent = g.keterangan;
+      no.textContent = n > 1 ? `${f + 1} / ${n}` : '';
+      prev.hidden = next.hidden = n < 2;
+      thumbs.innerHTML = n > 1
+        ? g.foto.map((u, i) => `<button type="button" data-f="${i}" class="${i === f ? 'on' : ''}" aria-label="Foto ${i + 1}"><img src="${esc(ukuran(u, 160))}" alt="" loading="lazy" /></button>`).join('')
+        : '';
+      thumbs.querySelector('.on')?.scrollIntoView({ block: 'nearest', inline: 'center' });
+      if (n > 1) new Image().src = g.foto[(f + 1) % n]; // muat foto berikutnya lebih dulu
+    }
+    const geser = (d: number) => { f += d; tampil(); };
+
     gal.addEventListener('click', (e) => {
-      const b = (e.target as HTMLElement).closest('button');
+      const b = (e.target as HTMLElement).closest('button[data-i]') as HTMLElement | null;
       if (!b) return;
-      im.src = b.dataset.src!;
-      im.alt = b.dataset.cap!;
-      cap.textContent = b.dataset.cap!;
+      a = Number(b.dataset.i);
+      f = 0;
+      tampil();
       dlg.showModal();
     });
+    prev.addEventListener('click', () => geser(-1));
+    next.addEventListener('click', () => geser(1));
+    thumbs.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest('button[data-f]') as HTMLElement | null;
+      if (b) { f = Number(b.dataset.f); tampil(); }
+    });
     dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') geser(-1);
+      else if (e.key === 'ArrowRight') geser(1);
+    });
+    dlg.addEventListener('close', () => { im.removeAttribute('src'); });
+
+    // Geser jari di HP
+    let x0 = 0;
+    const stage = document.getElementById('stage')!;
+    stage.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+    stage.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) geser(dx < 0 ? 1 : -1);
+    });
 
     muatData(
       (d) => {
-        const foto = d.galeri.filter((g) => /^(https?:\/\/|\/)/i.test(g.url));
-        gal.innerHTML = foto.length
-          ? foto.map((g) => {
-              const ket = g.keterangan || g.judul;
-              return `<button type="button" data-src="${esc(g.url)}" data-cap="${esc(ket)}"><img src="${esc(g.url)}" alt="${esc(ket)}" loading="lazy" /></button>`;
+        album = d.galeri;
+        gal.innerHTML = album.length
+          ? album.map((g, i) => {
+              const n = g.foto.length;
+              return `<button type="button" data-i="${i}" aria-label="Buka album ${esc(g.judul)}"><img src="${esc(ukuran(g.foto[0], 640))}" alt="${esc(g.judul)}" loading="lazy" /><span class="alb-info"><b>${esc(g.judul)}</b>${n > 1 ? `<i>${n} foto</i>` : ''}</span></button>`;
             }).join('')
           : '<p class="meta">Belum ada foto.</p>';
       },
