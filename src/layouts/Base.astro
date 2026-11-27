@@ -38,6 +38,20 @@ const active = (h: string) => (h === '/' ? path === '/' : path === h || path.sta
     <header class="site">
       <div class="wrap bar">
         <a class="brand" href="/"><img src={site.logo} alt="" /><span>{site.nama}<small>{site.daerah}</small></span></a>
+        <script is:inline define:vars={{ bawaan: site.logo }}>
+          // Pasang logo unggahan terakhir secepat mungkin agar tidak berkedip.
+          window.pasangLogo = function (u) {
+            var img = document.querySelector('.brand img'), ikon = document.querySelector('link[rel="icon"]');
+            if (!img) return;
+            var khusus = !!u && u !== bawaan;
+            img.onerror = function () { img.onerror = null; img.classList.remove('logo-unggah'); img.src = bawaan; };
+            img.classList.toggle('logo-unggah', khusus);
+            if (img.getAttribute('src') !== (u || bawaan)) img.src = u || bawaan;
+            if (ikon && khusus) { ikon.removeAttribute('type'); ikon.href = u; }
+            else if (ikon) { ikon.type = 'image/svg+xml'; ikon.href = '/favicon.svg'; }
+          };
+          try { var l = localStorage.getItem('mpp-logo'); if (l) window.pasangLogo(l); } catch (e) {}
+        </script>
         <button class="menu-btn" id="mb" aria-expanded="false" aria-controls="nv">Menu</button>
         <nav id="nv" aria-label="Utama">
           <ul>{nav.map(([h, t]) => <li><a href={h} aria-current={active(h) ? 'page' : undefined}>{t}</a></li>)}</ul>
@@ -78,6 +92,11 @@ const active = (h: string) => (h === '/' ? path === '/' : path === h || path.sta
       try {
         if (wp) { document.documentElement.style.setProperty('--wp', `url("${wp}")`); localStorage.setItem('mpp-wp', wp); }
         else { document.documentElement.style.removeProperty('--wp'); localStorage.removeItem('mpp-wp'); }
+      } catch { /* abaikan */ }
+      (window as any).pasangLogo?.(d.situs.logo);
+      try {
+        if (d.situs.logo.startsWith('https://')) localStorage.setItem('mpp-logo', d.situs.logo);
+        else localStorage.removeItem('mpp-logo');
       } catch { /* abaikan */ }
       const sp = document.querySelector('.brand span');
       if (sp) {

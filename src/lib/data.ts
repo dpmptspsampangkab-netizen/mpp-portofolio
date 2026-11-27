@@ -93,7 +93,8 @@ export function normalisasi(raw: any) {
     singkat: ambil('singkat', site.singkat),
     daerah: ambil('daerah', site.daerah),
     tagline: ambil('tagline', site.tagline),
-    logo: site.logo,
+    // Logo diunggah admin (kunci Pengaturan `logo`); bila kosong memakai logo bawaan.
+    logo: ambilWallpaper(p.logo) || site.logo,
     wallpaper: ambilWallpaper(p.wallpaper),
     pengaduanLink: ambilWallpaper(p.pengaduanLink) || PENGADUAN_BAWAAN,
     pengaduanTeks: ambil('pengaduanTeks', 'Buat pengaduan'),

@@ -748,3 +748,6 @@ header.site .bar > nav { min-width: 0; }
 
 /* Alur: penjelasan di bawah judul langkah */
 .poin li .ket { display: block; margin-top: 4px; }
+
+/* Logo unggahan admin: tampil utuh, tanpa dipotong bulat */
+.brand img.logo-unggah { width: auto; min-width: 28px; max-width: 76px; height: 40px; border-radius: 0; object-fit: contain; background: transparent; }
