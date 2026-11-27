@@ -8,13 +8,19 @@ import Base from '../../layouts/Base.astro';
       <p>Kabar dan informasi terbaru dari Mal Pelayanan Publik.</p>
     </section>
 
-    <div class="tools">
-      <input id="cari" type="search" placeholder="Cari berita…" aria-label="Cari berita" />
-      <select id="urut" aria-label="Urutkan berita">
-        <option value="baru">Terbaru</option>
-        <option value="lama">Terlama</option>
-      </select>
-      <span class="meta tools-n" id="jumlah" aria-live="polite"></span>
+    <div class="bilah" role="search">
+      <label class="bilah-cari">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
+        <input id="cari" type="search" placeholder="Cari berita…" aria-label="Cari berita" />
+      </label>
+      <label class="bilah-urut">
+        <select id="urut" aria-label="Urutkan berita">
+          <option value="baru">Terbaru</option>
+          <option value="lama">Terlama</option>
+        </select>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </label>
+      <span class="bilah-n" id="jumlah" aria-live="polite"></span>
     </div>
 
     <div class="nw-grid" id="daftar"><p class="meta">Memuat…</p></div>
