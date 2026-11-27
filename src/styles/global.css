@@ -546,6 +546,26 @@ html.gulir .hero2 .h2-jam { will-change: transform; transform: translate3d(0, ca
   .h2-panel .pill-col { flex: 1 1 40% !important; }
 }
 
+/* ---------- Panel Layanan unggulan berfoto (foto kiri, menu kanan) ---------- */
+.pn-split {
+  position: relative; display: grid; grid-template-columns: minmax(250px, 41%) minmax(0, 1fr); gap: 20px; align-items: stretch;
+  clip-path: inset(-90px 0 0 0 round 0 0 34px 34px);
+}
+.pn-split .pn-foto {
+  position: absolute; z-index: 2; left: 4px; bottom: 0; width: min(43%, 470px); max-width: none; height: auto; max-height: calc(100% + 56px);
+  object-fit: contain; object-position: left bottom; pointer-events: none; filter: drop-shadow(0 14px 18px rgba(8, 50, 32, 0.22));
+}
+.pn-split .pn-isi { grid-column: 2; position: relative; z-index: 1; min-width: 0; }
+.pn-split .tiles { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+@media (max-width: 860px) {
+  .pn-split { grid-template-columns: 1fr; gap: 0; padding-top: 12px; clip-path: none; }
+  .pn-split .pn-foto {
+    position: relative; left: auto; bottom: auto; display: block; width: min(62%, 300px); max-height: none; margin: 0 auto 6px;
+    -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%); mask-image: linear-gradient(to bottom, #000 78%, transparent 100%); filter: none;
+  }
+  .pn-split .pn-isi { grid-column: 1; }
+}
+
 /* ---------- Efek gulir kontinu (aktif hanya dengan html.gulir) ---------- */
 .gbar, .deco { display: none; }
 .hero { position: relative; }
