@@ -27,11 +27,11 @@ const [dk, db] = bagi(site.daerah);
       </div>
     </section>
     <section class="blk"><div class="kpis" id="capaian"></div></section>
-    <section class="blk"><div class="panel pn-split" data-g>
+    <section class="blk"><div class="panel pn-split pn-unggulan" data-g>
       <i class="pn-blob" data-par aria-hidden="true"></i>
       <img class="pn-foto" data-par src="/hero/petugas-layanan.webp" alt="Petugas MPP mempersilakan memilih layanan" width="1000" height="805" loading="lazy" decoding="async" />
       <div class="pn-isi">
-        <h2>Layanan unggulan</h2><p class="sub">Klik layanan untuk melihat syarat dan alurnya.</p>
+        <h2>Layanan unggulan</h2><p class="sub" id="layanan-sub">Pilih instansi untuk melihat layanan unggulannya.</p>
         <div class="tiles" id="layanan"><p class="meta">Memuat…</p></div>
       </div>
     </div></section>
@@ -51,6 +51,7 @@ const [dk, db] = bagi(site.daerah);
   import { muatData, esc, tanggalIndo, pesanGagal } from '../lib/data';
   import type { Data } from '../lib/data';
   import { mulaiGulir } from '../lib/gulir';
+  import { tampilUnggulan } from '../lib/unggulan';
 
   const el = (id: string) => document.getElementById(id)!;
 
@@ -100,9 +101,7 @@ const [dk, db] = bagi(site.daerah);
           `<div class="dots" style="--n:${c.titik}" role="img" aria-label="${esc(c.label)}: ${esc(c.skala)}">${titik}</div><small>${esc(c.skala)}</small>${c.tautan ? `<a class="lnk" href="${esc(c.tautan)}">Beri penilaian →</a>` : ''}</div>`;
       }).join('');
 
-      const unggulan = d.layanan.filter((l) => l.unggulan);
-      const tampil = (unggulan.length ? unggulan : d.layanan).slice(0, 6);
-      el('layanan').innerHTML = tampil.length ? tampil.map((l, j) => `<a class="tile" data-g data-gr="1,0.7" style="--i:${j % 3}" href="/layanan/detail?id=${encodeURIComponent(l.id)}">${IKON_DOK}<span><b>${esc(l.nama)}</b><small>${esc([l.instansi, l.waktu].filter((x) => x && x !== '-').join(' · '))}</small></span></a>`).join('') : '<p class="meta">Belum ada layanan.</p>';
+      tampilUnggulan(d, IKON_GEDUNG, IKON_DOK);
 
       el('instansi').innerHTML = d.instansi.length
         ? d.instansi.map((i, j) => `<div class="tile" data-g data-gr="1,0.7" style="--i:${j % 3};--s:${j % 2 ? -1 : 1}">${IKON_GEDUNG}<span><b>${esc(i.nama)}</b>${i.loket ? `<small>${esc(i.loket)}</small>` : ''}</span></div>`).join('')

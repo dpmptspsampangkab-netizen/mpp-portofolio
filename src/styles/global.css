@@ -680,3 +680,21 @@ html.gulir footer.site[data-g] {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* ---------- Layanan unggulan: pilih instansi lalu layanan ---------- */
+.pn-unggulan .tiles { align-content: start; }
+button.tile { width: 100%; border: 0; font: inherit; text-align: left; cursor: pointer; }
+button.tile:hover { translate: 0 -2px; box-shadow: 0 12px 22px -12px rgba(10, 60, 38, 0.5); }
+.tile:focus-visible, .kembali:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.tile .panah { margin-left: auto; font-style: normal; font-size: 1.4rem; line-height: 1; color: var(--green); }
+.pilih-kepala { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.pilih-kepala strong { font-weight: 600; }
+.kembali {
+  font: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 0; border-radius: 999px;
+  padding: 8px 16px; background: var(--acc-soft); color: var(--dark);
+}
+.kembali:hover { background: var(--acc); }
+.tile.masuk { animation: ubin-masuk 0.3s ease both; animation-delay: calc(var(--i, 0) * 40ms); }
+@keyframes ubin-masuk { from { opacity: 0; transform: translateY(12px); } }
+@media (min-width: 861px) { .pn-unggulan { min-height: 360px; } }
+@media (prefers-reduced-motion: reduce) { .tile.masuk { animation: none; } }
