@@ -4,16 +4,38 @@ import Base from '../layouts/Base.astro';
 <Base title="Capaian" description="Capaian dan indikator kinerja Mal Pelayanan Publik.">
   <div class="wrap">
     <div class="page-head"><h1>Capaian</h1><p>Indikator kinerja yang diperbarui secara berkala.</p></div>
-    <div class="grid" id="list"><p class="meta">Memuat…</p></div>
+    <div class="cp-grid" id="list"><p class="meta">Memuat…</p></div>
   </div>
+
   <script>
     import { muatData, esc, pesanGagal } from '../lib/data';
 
     const list = document.getElementById('list')!;
+
+    // Ikon sederhana menurut kata kunci pada label.
+    const ikon = (label: string) => {
+      const l = label.toLowerCase();
+      let p = '<path d="M5 20V10M12 20V4M19 20v-7"/>';
+      if (/instansi/.test(l)) p = '<path d="M4 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6M9 10h.01M15 10h.01"/>';
+      else if (/layanan/.test(l)) p = '<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>';
+      else if (/kunjung/.test(l)) p = '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.4c2.2.7 3.5 2.6 3.5 5.6"/>';
+      else if (/puas|indeks/.test(l)) p = '<circle cx="12" cy="12" r="9"/><path d="M8 14.5s1.5 2 4 2 4-2 4-2M9 9.5h.01M15 9.5h.01"/>';
+      return `<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
+    };
+
     muatData(
       (d) => {
-        list.innerHTML = d.situs.capaian
-          .map((c) => `<div class="card stat"><b>${c.nilai.toLocaleString('id-ID')}${c.satuan ? ' ' + esc(c.satuan) : ''}</b><span>${esc(c.label)}</span></div>`)
+        const items = d.situs.capaian;
+        // Kartu gelap: "Indeks kepuasan" bila ada, selain itu kartu pertama.
+        let hi = items.findIndex((c) => /puas|indeks/i.test(c.label));
+        if (hi < 0) hi = 0;
+        list.innerHTML = items
+          .map(
+            (c, i) => `<div class="cp-card${i === hi ? ' cp-hi' : ''}">
+  <div class="cp-top"><span class="cp-ic">${ikon(c.label)}</span><span class="cp-label">${esc(c.label)}</span></div>
+  <div class="cp-num">${c.nilai.toLocaleString('id-ID')}${c.satuan ? `<small>${esc(c.satuan)}</small>` : ''}</div>
+</div>`,
+          )
           .join('');
       },
       () => { list.innerHTML = pesanGagal; },

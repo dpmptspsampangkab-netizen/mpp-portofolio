@@ -775,3 +775,64 @@ footer.site .ft-qr:not([hidden]) + .wrap { flex: 1; min-width: 0; padding-left: 
   footer.site #ft { padding-right: 224px; }
   footer.site::after { right: 16px; width: 190px; height: 236px; }
 }
+
+/* ---------- Capaian: kartu gaya dashboard ---------- */
+.cp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  padding: 18px 0 8px;
+}
+.cp-card {
+  --dy: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 26px;
+  min-height: 168px;
+  padding: 20px 22px;
+  background: #fff;
+  color: var(--ink, #0f2419);
+  border-radius: 24px;
+  box-shadow: 0 14px 34px -14px rgba(16, 40, 30, .22), 0 2px 6px rgba(16, 40, 30, .05);
+  transform: translateY(var(--dy));
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.cp-card:hover {
+  transform: translateY(calc(var(--dy) - 4px));
+  box-shadow: 0 20px 40px -14px rgba(16, 40, 30, .28), 0 2px 6px rgba(16, 40, 30, .06);
+}
+.cp-top { display: flex; align-items: center; gap: 12px; }
+.cp-ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #e6f3ec;
+  background: color-mix(in srgb, var(--green, #1f8a5b) 14%, #fff);
+  color: var(--green, #1f8a5b);
+}
+.cp-ic svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.cp-label { font-weight: 600; font-size: .95rem; line-height: 1.3; }
+.cp-num { font-size: clamp(2.1rem, 4vw, 2.8rem); font-weight: 700; line-height: 1; letter-spacing: -.02em; }
+.cp-num small { margin-left: 6px; font-size: .42em; font-weight: 600; opacity: .6; letter-spacing: 0; }
+
+/* Kartu sorotan (gelap) */
+.cp-card.cp-hi {
+  background: var(--dark-grad, linear-gradient(135deg, #0f3d2e, #1b6b4a));
+  color: #fff;
+  box-shadow: 0 22px 44px -16px rgba(10, 45, 32, .55);
+}
+.cp-card.cp-hi .cp-ic { background: #fff; color: var(--green, #1f8a5b); }
+
+/* Efek melayang hanya di layar lebar */
+@media (min-width: 900px) {
+  .cp-grid { padding-top: 26px; }
+  .cp-card:nth-child(even) { --dy: -14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cp-card { --dy: 0px !important; transition: none; }
+  .cp-card:hover { transform: none; }
+}
