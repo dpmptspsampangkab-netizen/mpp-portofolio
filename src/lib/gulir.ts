@@ -1,5 +1,5 @@
 // Efek gulir kontinu: posisi gulir diterjemahkan menjadi variabel CSS (--p, --sp), tampilannya diatur di global.css.
-// Tanpa pustaka. Tidak aktif bila pengunjung memilih gerak dikurangi; tanpa JS semua elemen tetap tampil penuh.
+// Elemen [data-par] mendapat --t (-1..1) untuk paralaks. Tanpa pustaka. Tidak aktif bila pengunjung memilih gerak dikurangi; tanpa JS semua elemen tetap tampil penuh.
 
 const klem = (n: number, a = 0, b = 1) => Math.min(b, Math.max(a, n));
 
@@ -32,12 +32,14 @@ export function mulaiGulir(): void {
   root.classList.add('gulir');
 
   let target: HTMLElement[] = [];
+  let par: HTMLElement[] = [];
   const terakhir = new WeakMap<HTMLElement, string>();
   let menunggu = false;
 
   const kumpul = () => {
     document.querySelector('footer.site')?.setAttribute('data-g', '');
     target = Array.from(document.querySelectorAll<HTMLElement>('[data-g]'));
+    par = Array.from(document.querySelectorAll<HTMLElement>('[data-par]'));
     target.forEach((e) => { if (e.classList.contains('kpi')) siapkanAngka(e); });
   };
 
@@ -66,6 +68,14 @@ export function mulaiGulir(): void {
         e.style.setProperty('--p', t);
         if (e.dataset.g === 'kpi') tulisAngka(e, p);
       }
+    }
+    // Paralaks foto/hiasan: --t = +1 saat induk masih di bawah layar, 0 saat di tengah, -1 saat sudah lewat di atas.
+    for (const e of par) {
+      const host = e.parentElement;
+      if (!host) continue;
+      const r = host.getBoundingClientRect();
+      const t = klem(((r.top + r.height / 2) - vh / 2) / (vh / 2 + r.height / 2), -1, 1).toFixed(3);
+      if (terakhir.get(e) !== t) { terakhir.set(e, t); e.style.setProperty('--t', t); }
     }
   };
 

@@ -523,7 +523,7 @@ footer.site strong { color: #fff; font-weight: 600; font-size: 1rem; }
 
 /* efek gulir hero berfoto */
 html.gulir .hero2 .h2-judul { will-change: transform, opacity; transform: translate3d(0, calc(var(--p, 0) * 40px), 0); opacity: calc(1 - var(--p, 0) * 0.7); }
-html.gulir .hero2 .h2-foto { will-change: transform; transform: translateX(-50%) scale(calc(1 + var(--p, 0) * 0.05)); }
+html.gulir .hero2 .h2-foto { will-change: transform; transform: translateX(-50%) translate3d(calc(var(--p, 0) * -22px), 0, 0) scale(calc(1 + var(--p, 0) * 0.06)); }
 html.gulir .hero2 .h2-jam { will-change: transform; transform: translate3d(0, calc(var(--p, 0) * -34px), 0); }
 
 @media (max-width: 960px) {
@@ -546,7 +546,7 @@ html.gulir .hero2 .h2-jam { will-change: transform; transform: translate3d(0, ca
   .h2-panel .pill-col { flex: 1 1 40% !important; }
 }
 
-/* ---------- Panel Layanan unggulan berfoto (foto kiri, menu kanan) ---------- */
+/* ---------- Panel berfoto: Layanan unggulan (foto kiri) dan Instansi (foto kanan) ---------- */
 .pn-split {
   position: relative; display: grid; grid-template-columns: minmax(250px, 41%) minmax(0, 1fr); gap: 20px; align-items: stretch;
   clip-path: inset(-90px 0 0 0 round 0 0 34px 34px);
@@ -557,13 +557,32 @@ html.gulir .hero2 .h2-jam { will-change: transform; transform: translate3d(0, ca
 }
 .pn-split .pn-isi { grid-column: 2; position: relative; z-index: 1; min-width: 0; }
 .pn-split .tiles { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.pn-blob {
+  position: absolute; z-index: 0; left: -40px; bottom: -70px; width: 340px; height: 340px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 40% 40%, rgba(95, 191, 143, 0.42), rgba(95, 191, 143, 0) 68%);
+}
+/* varian foto di kanan */
+.pn-split.pn-kanan { grid-template-columns: minmax(0, 1fr) minmax(220px, 33%); }
+.pn-split.pn-kanan .pn-isi { grid-column: 1; }
+.pn-split.pn-kanan .pn-foto { left: auto; right: 4px; width: min(35%, 400px); object-position: right bottom; }
+.pn-split.pn-kanan .pn-blob { left: auto; right: -40px; }
+.pn-split.pn-kanan .tiles { grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); }
+
+/* paralaks foto (aktif dengan html.gulir; --t dihitung di gulir.ts) */
+html.gulir .pn-split .pn-foto { will-change: transform; transform: translate3d(calc(var(--t, 0) * -12px), calc((1 - var(--t, 0)) * 18px), 0); }
+html.gulir .pn-split.pn-kanan .pn-foto { transform: translate3d(calc(var(--t, 0) * 12px), calc((1 - var(--t, 0)) * 18px), 0); }
+html.gulir .pn-blob { will-change: transform; transform: translate3d(0, calc(var(--t, 0) * -48px), 0) scale(calc(1 + var(--t, 0) * -0.1)); }
+
 @media (max-width: 860px) {
-  .pn-split { grid-template-columns: 1fr; gap: 0; padding-top: 12px; clip-path: none; }
-  .pn-split .pn-foto {
-    position: relative; left: auto; bottom: auto; display: block; width: min(62%, 300px); max-height: none; margin: 0 auto 6px;
+  .pn-split, .pn-split.pn-kanan { grid-template-columns: 1fr; gap: 0; padding-top: 12px; clip-path: none; }
+  .pn-split .pn-foto, .pn-split.pn-kanan .pn-foto {
+    position: relative; left: auto; right: auto; bottom: auto; display: block; width: min(62%, 300px); max-height: none; margin: 0 auto 6px;
     -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%); mask-image: linear-gradient(to bottom, #000 78%, transparent 100%); filter: none;
   }
-  .pn-split .pn-isi { grid-column: 1; }
+  html.gulir .pn-split .pn-foto, html.gulir .pn-split.pn-kanan .pn-foto { transform: none; }
+  .pn-split .pn-isi, .pn-split.pn-kanan .pn-isi { grid-column: 1; }
+  .pn-blob { width: 240px; height: 240px; left: 50%; right: auto; bottom: auto; top: 0; margin-left: -120px; }
+  .pn-split.pn-kanan .pn-blob { left: 50%; right: auto; }
 }
 
 /* ---------- Efek gulir kontinu (aktif hanya dengan html.gulir) ---------- */
