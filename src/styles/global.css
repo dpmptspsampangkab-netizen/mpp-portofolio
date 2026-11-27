@@ -754,3 +754,24 @@ header.site .bar > nav { min-width: 0; }
 /* Layanan: tabel (memakai gaya .dt dari tabel Aturan) */
 .dt-layanan .dt-head, .dt-layanan .dt-row { grid-template-columns: minmax(0, 2fr) 130px minmax(110px, 1fr) minmax(150px, 1fr) 100px; }
 .dt-layanan #list .dt-row:first-child { border-top: 0; }
+
+/* Footer: barcode pengaduan di sebelah kiri teks */
+footer.site:has(.ft-qr:not([hidden])) { display: flex; align-items: center; }
+footer.site .ft-qr {
+  position: relative; z-index: 2; flex: none; margin-left: 28px; width: 124px; padding: 10px 10px 8px; border-radius: 20px;
+  background: #fff; color: var(--dark); text-align: center; text-decoration: none;
+}
+footer.site .ft-qr[hidden] { display: none; }
+footer.site .ft-qr img { display: block; width: 104px; height: 104px; object-fit: contain; }
+footer.site .ft-qr span { display: block; margin-top: 6px; font-size: 0.68rem; font-weight: 600; line-height: 1.25; }
+footer.site .ft-qr:focus-visible { outline: 3px solid var(--acc); outline-offset: 3px; }
+footer.site .ft-qr:not([hidden]) + .wrap { flex: 1; min-width: 0; padding-left: 22px; }
+@media (max-width: 600px) {
+  footer.site:has(.ft-qr:not([hidden])) { flex-direction: column; align-items: flex-start; justify-content: center; gap: 14px; padding-top: 18px; padding-bottom: 18px; }
+  footer.site .ft-qr { margin-left: 18px; }
+  footer.site .ft-qr:not([hidden]) + .wrap { flex: none; width: 100%; padding-left: 18px; }
+}
+@media (min-width: 601px) and (max-width: 900px) {
+  footer.site #ft { padding-right: 224px; }
+  footer.site::after { right: 16px; width: 190px; height: 236px; }
+}
