@@ -8,197 +8,70 @@ import Base from '../layouts/Base.astro';
       <p>Dasar hukum, standar pelayanan, dan dokumen resmi MPP. Lihat atau unduh dokumen yang Anda perlukan.</p>
     </section>
 
-    <div class="fb" id="fb">
-      <div class="fb-kat" id="katw">
-        <button type="button" class="fb-btn" id="katb" aria-haspopup="listbox" aria-expanded="false" aria-controls="katl">
-          <span id="katt">Semua kategori</span>
-          <svg class="fb-chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <ul class="fb-list" id="katl" role="listbox" tabindex="-1" aria-label="Kategori aturan" hidden></ul>
-      </div>
-      <label class="fb-cari">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
-        <input id="cari" type="search" placeholder="Cari judul atau nomor aturan…" aria-label="Cari aturan" autocomplete="off" />
-      </label>
-      <span class="fb-n" id="jumlah" aria-live="polite"></span>
+    <div class="chips" id="kat" role="tablist" aria-label="Kategori aturan"></div>
+    <div class="tools">
+      <input id="cari" type="search" placeholder="Cari judul atau nomor aturan…" aria-label="Cari aturan" />
+      <span class="meta tools-n" id="jumlah" aria-live="polite"></span>
     </div>
 
-    <div class="dt" role="table" aria-label="Daftar aturan">
-      <div class="dt-head" role="row">
-        <span role="columnheader">Dokumen</span>
-        <span role="columnheader">Kategori</span>
-        <span role="columnheader">Nomor</span>
-        <span role="columnheader">Tahun</span>
-        <span role="columnheader">Aksi</span>
-      </div>
-      <div id="daftar" role="rowgroup"><p class="meta dt-msg">Memuat…</p></div>
-    </div>
+    <div class="nw-grid dok-grid" id="daftar"><p class="meta">Memuat…</p></div>
     <p class="empty" id="kosong">Belum ada dokumen yang cocok.</p>
   </div>
-
-  <dialog class="modal dmodal" id="mdok" aria-labelledby="mdok-t">
-    <div class="dm-bar">
-      <strong id="mdok-t"></strong>
-      <div class="dm-act">
-        <a class="dt-btn" id="mdok-tab" href="#" target="_blank" rel="noopener" title="Buka di tab baru">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg><span>Tab baru</span>
-        </a>
-        <a class="dt-btn unduh" id="mdok-unduh" href="#" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><span>Unduh</span>
-        </a>
-        <button type="button" class="dm-x" id="mdok-x" aria-label="Tutup">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="dm-body"><iframe id="mdok-f" title="Pratinjau dokumen" allow="fullscreen"></iframe></div>
-  </dialog>
 </Base>
 
 <script>
   import { esc } from '../lib/data';
-  import { muatAturan, kategoriUrut, unduhUrl, aman, tglIndo, ukuranTeks } from '../lib/aturan';
+  import { muatAturan, kategoriUrut, unduhUrl, aman } from '../lib/aturan';
   import type { Aturan } from '../lib/aturan';
 
   const el = (id: string) => document.getElementById(id)!;
   let semua: Aturan[] = [];
   let aktif = new URLSearchParams(location.search).get('k') || '';
 
-  const svg = (isi: string, u = 20) => `<svg viewBox="0 0 24 24" width="${u}" height="${u}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${isi}</svg>`;
-  const BERKAS = svg('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>', 22);
-  const CENTANG = svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 18);
-  const MATA = svg('<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', 16);
-  const UNDUH = svg('<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>', 16);
+  const BERKAS = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>';
 
-  function baris(a: Aturan): string {
+  function kartu(a: Aturan): string {
     const lihat = aman(a.berkas);
-    const aksi = lihat
-      ? `<a class="dt-btn" href="${esc(lihat)}" data-lihat="${esc(a.id)}" target="_blank" rel="noopener">${MATA}<span>Lihat</span></a>` +
-        `<a class="dt-btn unduh" href="${esc(unduhUrl(lihat))}" target="_blank" rel="noopener">${UNDUH}<span>Unduh</span></a>`
-      : '<span class="dt-none">Berkas belum tersedia</span>';
-    const uk = ukuranTeks(a.ukuran);
-    const sub = [tglIndo(a.tanggal), uk ? `Size: ${uk}` : ''].filter(Boolean).join(' \u00b7 ');
-    return `<div class="dt-row" role="row">` +
-      `<div class="dt-doc" role="cell"><span class="dok-ico dt-ico">${BERKAS}</span>` +
-      `<div class="dt-ttl"><strong>${esc(a.judul)}</strong>${sub ? `<small>${esc(sub)}</small>` : ''}</div></div>` +
-      `<div class="dt-c dt-kat" role="cell"><span class="mtag">${esc(a.kategori)}</span></div>` +
-      `<div class="dt-c" role="cell" data-l="Nomor">${esc(a.nomor || '-')}</div>` +
-      `<div class="dt-c" role="cell" data-l="Tahun">${esc(a.tahun || '-')}</div>` +
-      `<div class="dt-act" role="cell">${aksi}</div>` +
-      `</div>`;
+    const chip = [
+      a.nomor ? `<span class="mchip">Nomor ${esc(a.nomor)}</span>` : '',
+      a.tahun ? `<span class="mchip">Tahun ${esc(a.tahun)}</span>` : '',
+    ].join('');
+    return `<article class="nw dok"><div class="dok-top"><span class="dok-ico">${BERKAS}</span><div class="dok-ttl">` +
+      `<span class="mtag">${esc(a.kategori)}</span><h3>${esc(a.judul)}</h3>${chip ? `<div class="mchips">${chip}</div>` : ''}` +
+      `${a.keterangan ? `<p class="dok-ket">${esc(a.keterangan)}</p>` : ''}</div></div>` +
+      (lihat
+        ? `<div class="dok-act"><a href="${esc(lihat)}" target="_blank" rel="noopener">Lihat</a><a class="unduh" href="${esc(unduhUrl(lihat))}" target="_blank" rel="noopener">Unduh</a></div>`
+        : '<div class="dok-act kosong"><span>Berkas belum tersedia</span></div>') +
+      `</article>`;
   }
 
   function tampil() {
     const kats = kategoriUrut(semua);
     if (aktif && !kats.includes(aktif)) aktif = '';
-    el('katw').style.display = kats.length > 1 ? '' : 'none';
-    el('katt').textContent = aktif || 'Semua kategori';
-    const hitung = (k: string) => (k ? semua.filter((x) => x.kategori === k).length : semua.length);
-    el('katl').innerHTML = ['', ...kats].map((k, i) =>
-      `<li role="option" id="ko-${i}" data-k="${esc(k)}" aria-selected="${k === aktif}" class="${k === aktif ? 'on' : ''}">` +
-      `<span>${k ? esc(k) : 'Semua kategori'}</span><em>${hitung(k)}</em>${CENTANG}</li>`).join('');
+    el('kat').innerHTML = kats.length > 1
+      ? ['', ...kats].map((k) => `<button type="button" role="tab" aria-selected="${k === aktif}" class="${k === aktif ? 'on' : ''}" data-k="${esc(k)}">${k ? esc(k) : 'Semua'}</button>`).join('')
+      : '';
     const q = (el('cari') as HTMLInputElement).value.trim().toLowerCase();
     const hasil = semua
-      .filter((a) => (!aktif || a.kategori === aktif) && (!q || `${a.judul} ${a.nomor} ${a.tahun} ${a.kategori}`.toLowerCase().includes(q)))
+      .filter((a) => (!aktif || a.kategori === aktif) && (!q || `${a.judul} ${a.nomor} ${a.tahun} ${a.keterangan}`.toLowerCase().includes(q)))
       .sort((a, b) => a.urutan - b.urutan || String(b.tahun).localeCompare(String(a.tahun)) || a.judul.localeCompare(b.judul));
-    el('daftar').innerHTML = hasil.map(baris).join('');
+    el('daftar').innerHTML = hasil.map(kartu).join('');
     el('kosong').style.display = hasil.length ? 'none' : 'block';
-    el('jumlah').innerHTML = semua.length ? `<b>${hasil.length}</b> dokumen` : '';
+    el('jumlah').textContent = semua.length ? `${hasil.length} dokumen` : '';
   }
 
   muatAturan(
     (d) => { semua = d; tampil(); },
     true,
-    () => { el('daftar').innerHTML = '<p class="meta dt-msg">Data belum bisa dimuat. Coba muat ulang halaman.</p>'; },
+    () => { el('daftar').innerHTML = '<p class="meta">Data belum bisa dimuat. Coba muat ulang halaman.</p>'; },
   );
 
-  el('cari').addEventListener('input', tampil);
-
-  // ---- Dropdown kategori (dapat dipakai dengan keyboard) ----
-  const katb = el('katb') as HTMLButtonElement;
-  const katl = el('katl');
-  let sorot = 0;
-  const opsi = () => Array.from(katl.querySelectorAll('li')) as HTMLElement[];
-
-  function setSorot(i: number) {
-    const o = opsi();
-    if (!o.length) return;
-    sorot = (i + o.length) % o.length;
-    o.forEach((x, j) => x.classList.toggle('hl', j === sorot));
-    katl.setAttribute('aria-activedescendant', o[sorot].id);
-    o[sorot].scrollIntoView({ block: 'nearest' });
-  }
-  function bukaKat() {
-    katl.hidden = false;
-    katb.setAttribute('aria-expanded', 'true');
-    setSorot(Math.max(0, opsi().findIndex((x) => x.dataset.k === aktif)));
-    katl.focus();
-  }
-  function tutupKat(balik = true) {
-    if (katl.hidden) return;
-    katl.hidden = true;
-    katb.setAttribute('aria-expanded', 'false');
-    if (balik) katb.focus();
-  }
-  function pilihKat(k: string) {
-    aktif = k;
+  el('kat').addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('[data-k]') as HTMLElement | null;
+    if (!b) return;
+    aktif = b.dataset.k || '';
     history.replaceState(null, '', aktif ? `?k=${encodeURIComponent(aktif)}` : location.pathname);
-    tutupKat();
     tampil();
-  }
-
-  katb.addEventListener('click', () => (katl.hidden ? bukaKat() : tutupKat()));
-  katb.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); bukaKat(); }
   });
-  katl.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown') { e.preventDefault(); setSorot(sorot + 1); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setSorot(sorot - 1); }
-    else if (e.key === 'Home') { e.preventDefault(); setSorot(0); }
-    else if (e.key === 'End') { e.preventDefault(); setSorot(opsi().length - 1); }
-    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); const o = opsi()[sorot]; if (o) pilihKat(o.dataset.k || ''); }
-    else if (e.key === 'Escape') { e.preventDefault(); tutupKat(); }
-    else if (e.key === 'Tab') tutupKat(false);
-  });
-  katl.addEventListener('click', (e) => {
-    const li = (e.target as HTMLElement).closest('li[data-k]') as HTMLElement | null;
-    if (li) pilihKat(li.dataset.k || '');
-  });
-  document.addEventListener('click', (e) => { if (!el('katw').contains(e.target as Node)) tutupKat(false); });
-
-  // ---- Lihat dokumen dalam modal ----
-  const dlg = el('mdok') as HTMLDialogElement;
-  const frame = el('mdok-f') as HTMLIFrameElement;
-
-  /** Berkas Google Drive memakai halaman pratinjau; selain itu tautan dibuka apa adanya. */
-  function pratinjau(u: string): string {
-    const m = /drive\.google\.com\/file\/d\/([\w-]+)/.exec(u) || /[?&]id=([\w-]+)/.exec(u);
-    return m && /drive\.google\.com/.test(u) ? `https://drive.google.com/file/d/${m[1]}/preview` : u;
-  }
-
-  function buka(a: Aturan) {
-    const u = aman(a.berkas);
-    if (!u) return;
-    el('mdok-t').textContent = a.judul;
-    (el('mdok-tab') as HTMLAnchorElement).href = u;
-    (el('mdok-unduh') as HTMLAnchorElement).href = unduhUrl(u);
-    frame.src = pratinjau(u);
-    if (!dlg.open) dlg.showModal();
-  }
-
-  const tutup = () => { if (dlg.open) dlg.close(); };
-  dlg.addEventListener('close', () => { frame.src = 'about:blank'; });
-  el('mdok-x').addEventListener('click', tutup);
-  dlg.addEventListener('click', (e) => { if (e.target === dlg) tutup(); });
-
-  el('daftar').addEventListener('click', (e) => {
-    const ev = e as MouseEvent;
-    if (ev.button !== 0 || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
-    const t = (ev.target as HTMLElement).closest('a[data-lihat]') as HTMLElement | null;
-    if (!t) return;
-    const a = semua.find((x) => x.id === t.dataset.lihat);
-    if (!a) return;
-    e.preventDefault();
-    buka(a);
-  });
+  el('cari').addEventListener('input', tampil);
 </script>

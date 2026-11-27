@@ -1,19 +1,30 @@
 ---
 import Base from '../layouts/Base.astro';
 import site from '../data/site.json';
+// Kata terakhir nama / daerah tampil besar; kata sebelumnya kecil (gaya hero berfoto).
+const bagi = (t: string) => { const k = String(t).trim().split(/\s+/); const b = k.pop() ?? ''; return [k.join(' '), b]; };
+const [nk, nb] = bagi(site.nama);
+const [dk, db] = bagi(site.daerah);
 ---
 <Base>
   <div class="gbar" aria-hidden="true"></div>
   <div class="wrap">
-    <section class="hero" data-g="hero">
+    <section class="hero2" data-g="hero">
       <div class="deco" aria-hidden="true"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>
-      <div class="hero-text">
-        <h1 id="h-judul">{site.nama}<br />{site.daerah}</h1>
-        <p id="h-tagline">{site.tagline}</p>
-        <div class="row"><a class="btn" href="/layanan">Cari layanan</a><a class="btn alt" href="/kontak">Lokasi &amp; jam layanan</a><a class="btn line" id="b-aduan" href="/kontak">Pengaduan</a></div>
-        <div class="sebaran" id="sebaran"></div>
+      <h1 class="h2-judul" id="h-judul">
+        <span class="kiri"><small>{nk}</small> <b>{nb}</b></span>
+        <span class="kanan"><small>{dk}</small> <b>{db}</b></span>
+      </h1>
+      <img class="h2-foto" src="/hero/petugas.webp" alt="Petugas MPP menyambut pengunjung dengan ramah" width="900" height="1146" fetchpriority="high" decoding="async" />
+      <div class="h2-panel">
+        <div class="h2-kiri">
+          <p class="h2-eyebrow"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg>Selamat datang</p>
+          <p class="h2-tagline" id="h-tagline">{site.tagline}</p>
+          <div class="row"><a class="btn" href="/layanan">Cari layanan</a><a class="btn alt" href="/kontak">Lokasi &amp; jam layanan</a><a class="btn line" id="b-aduan" href="/kontak">Pengaduan</a></div>
+          <div class="sebaran" id="sebaran"></div>
+        </div>
+        <aside class="h2-jam" id="jam" aria-label="Jam layanan"><h3>Jam layanan</h3><p class="meta">Memuat…</p></aside>
       </div>
-      <aside class="card dark" id="jam" aria-label="Jam layanan"><h3>Jam layanan</h3><p class="meta">Memuat…</p></aside>
     </section>
     <section class="blk"><div class="kpis" id="capaian"></div></section>
     <section class="blk"><div class="panel" data-g>
@@ -59,7 +70,9 @@ import site from '../data/site.json';
 
   muatData(
     (d) => {
-      el('h-judul').innerHTML = `${esc(d.situs.nama)}<br />${esc(d.situs.daerah)}`;
+      const bagi = (t: string) => { const k = String(t).trim().split(/\s+/); const b = k.pop() ?? ''; return [k.join(' '), b]; };
+      const [nk, nb] = bagi(d.situs.nama), [dk, db] = bagi(d.situs.daerah);
+      el('h-judul').innerHTML = `<span class="kiri"><small>${esc(nk)}</small> <b>${esc(nb)}</b></span> <span class="kanan"><small>${esc(dk)}</small> <b>${esc(db)}</b></span>`;
       el('h-tagline').textContent = d.situs.tagline;
       el('sebaran').innerHTML = sebaran(d);
       // Tombol Pengaduan: tautan diisi admin di Pengaturan (kunci pengaduanLink).
